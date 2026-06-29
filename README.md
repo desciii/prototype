@@ -64,37 +64,6 @@
 
 ---
 
-## Database Schema
-
-```
-Supplier → PurchaseOrder → Delivery → IAR
-```
-
-**suppliers**
-```
-id, company_name, office_address, tin, email, contact_number, status, internal_remarks, timestamps
-```
-
-**purchase_orders**
-```
-id, po_number, po_date, po_amount, unit_office, supplier_id (FK),
-delivery_term, fund_cluster, pr_number, pr_date,
-ors_bur_number, ors_bur_date, status, remarks, timestamps
-```
-
-**deliveries**
-```
-id, purchase_order_id (FK), invoice_number, invoice_date, dr_number, dr_date, timestamps
-```
-
-**iars**
-```
-id, iar_number, purchase_order_id (FK), delivery_id (FK nullable),
-iar_date, inspected_by, inspection_date, status, remarks, timestamps
-```
-
----
-
 ## Local Setup
 
 ### Requirements
