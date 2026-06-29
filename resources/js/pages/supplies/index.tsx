@@ -1,14 +1,17 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
+
 
 interface Props {
-    message: string;
 }
 
-export default function Index({ message }: Props) {
+export default function Index({}: Props) {
     return (
         <div className="p-6">
             <h1 className="text-2xl font-bold">Supplies Page</h1>
-            <p>{message}</p>
+            <Button>
+            Add Supplier
+            </Button>
         </div>
     );
 }

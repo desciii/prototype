@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 
-class DeliveriesController extends Controller
+class POController extends Controller
 {
     public function index()
     {
-        return Inertia::render('deliveries/index', [
+        return Inertia::render('po/index', [
         ]);
     }
 }
