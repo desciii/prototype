@@ -133,7 +133,7 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                                 onChange={handleChange}
                                 className={inputClass}
                             >
-                                <option value="">-- Select Supplier --</option>
+                                <option value="">Select Supplier</option>
                                 {suppliers.map((s) => (
                                     <option key={s.id} value={s.id}>
                                         {s.company_name}

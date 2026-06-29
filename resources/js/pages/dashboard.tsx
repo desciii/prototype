@@ -86,7 +86,7 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
                 <div className="grid flex-1 gap-4 md:grid-cols-3">
                     <Card className="col-span-2 flex flex-col rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <CardHeader>
-                            <CardTitle>PO Value Over Time</CardTitle>
+                            <CardTitle>Purchase Order Value Over Time</CardTitle>
                             <CardDescription>Total purchase order amount per month, {new Date().getFullYear()}</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">

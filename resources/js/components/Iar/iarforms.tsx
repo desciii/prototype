@@ -139,7 +139,7 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                             onChange={handleChange}
                             className={inputClass}
                         >
-                            <option value="">-- Select PO Number --</option>
+                            <option value="">Select PO Number</option>
                             {purchaseOrders.map((po) => (
                                 <option key={po.id} value={po.id}>
                                     {po.po_number}
@@ -161,7 +161,7 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                             className={inputClass}
                             disabled={!data.purchase_order_id}
                         >
-                            <option value="">-- Select Delivery --</option>
+                            <option value="">Select Delivery</option>
                             {filteredDeliveries.map((d) => (
                                 <option key={d.id} value={d.id}>
                                     {d.invoice_number || `Delivery #${d.id}`}

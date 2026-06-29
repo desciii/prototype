@@ -102,7 +102,7 @@ export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Pr
                             onChange={handleChange}
                             className={inputClass}
                         >
-                            <option value="">-- Select PO Number --</option>
+                            <option value="">Select PO Number</option>
                             {purchaseOrders.map((po) => (
                                 <option key={po.id} value={po.id}>
                                     {po.po_number}
