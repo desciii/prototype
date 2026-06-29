@@ -24,7 +24,7 @@ class DashboardController extends Controller
             ->pluck('count', 'status');
 
         $monthlyPoAmount = PurchaseOrder::selectRaw("strftime('%m', po_date) as month, SUM(po_amount) as total")
-            ->whereRaw("strftime('%Y', po_date) = ?", [now()->year])
+            ->whereRaw("strftime('%Y', po_date) = ?", [(string) now()->year])
             ->groupBy('month')
             ->orderBy('month')
             ->get()

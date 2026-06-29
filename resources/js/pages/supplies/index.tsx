@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Supplierforms from '@/components/Suppliers/supplierforms';
+import { Head } from '@inertiajs/react';
 
 interface Supplier {
     id: number;
@@ -27,7 +28,7 @@ export default function Index({ suppliers }: Props) {
 
     return (
         <div className="p-6 space-y-6">
-
+            <Head title="Suppliers" />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>

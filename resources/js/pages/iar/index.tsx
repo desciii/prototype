@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Iarforms from '@/components/Iar/iarforms';
+import { Head } from '@inertiajs/react';
 
 interface PurchaseOrder {
     id: number;
@@ -43,6 +44,7 @@ export default function Index({ iars, purchaseOrders, deliveries }: Props) {
     return (
         <div className="p-6 space-y-6">
 
+            <Head title="IER Reports" />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>

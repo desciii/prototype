@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { DollarSign, Building2, ClipboardCheck, PackageCheck } from 'lucide-react';
+import { PhilippinePeso, Building2, ClipboardCheck, PackageCheck } from 'lucide-react';
 
 interface DashboardProps {
     stats: {
@@ -44,7 +44,7 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
                     <Card className="rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground">Total PO Value</CardTitle>
-                            <DollarSign className="size-4 text-muted-foreground" />
+                            <PhilippinePeso className="size-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">{peso.format(stats.totalPoAmount)}</div>
@@ -82,40 +82,77 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
                     </Card>
                 </div>
 
-                {/* Chart + status breakdown */}
+                {/* Chart status breakdown */}
                 <div className="grid flex-1 gap-4 md:grid-cols-3">
                     <Card className="col-span-2 flex flex-col rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <CardHeader>
                             <CardTitle>Purchase Order Value Over Time</CardTitle>
                             <CardDescription>Total purchase order amount per month, {new Date().getFullYear()}</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1">
-                            {chartData.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No purchase orders recorded this year yet.</p>
-                            ) : (
-                                <ResponsiveContainer width="100%" height="100%" minHeight={260}>
-                                    <AreaChart data={chartData}>
+                        <CardContent>
+                            <div className="h-[320px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart
+                                        data={chartData}
+                                        margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
+                                    >
                                         <defs>
                                             <linearGradient id="poFill" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="currentColor" stopOpacity={0.4} className="text-primary" />
-                                                <stop offset="95%" stopColor="currentColor" stopOpacity={0} className="text-primary" />
+                                                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.35} />
+                                                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
-                                        <XAxis dataKey="month" tickLine={false} axisLine={false} className="text-xs" />
-                                        <YAxis tickLine={false} axisLine={false} className="text-xs" tickFormatter={(v) => peso.format(v)} />
-                                        <Tooltip formatter={(value: number) => peso.format(value)} />
+
+                                        <CartesianGrid
+                                            vertical={false}
+                                            strokeDasharray="3 3"
+                                            stroke="rgba(128,128,128,0.2)"
+                                        />
+
+                                        <XAxis
+                                            dataKey="month"
+                                            tick={{ fontSize: 12, fill: 'currentColor' }}
+                                            tickLine={false}
+                                            axisLine={false}
+                                        />
+
+                                        <YAxis
+                                            width={70}
+                                            tickLine={false}
+                                            axisLine={false}
+                                            tick={{ fontSize: 11, fill: 'currentColor' }}
+                                            tickFormatter={(v) =>
+                                                v >= 1000000
+                                                    ? `₱${(v / 1000000).toFixed(1)}M`
+                                                    : v >= 1000
+                                                    ? `₱${(v / 1000).toFixed(0)}K`
+                                                    : `₱${v}`
+                                            }
+                                        />
+
+                                        <Tooltip
+                                            formatter={(value: number) => [peso.format(value), 'PO Amount']}
+                                            contentStyle={{
+                                                backgroundColor: 'hsl(var(--card))',
+                                                border: '1px solid hsl(var(--border))',
+                                                borderRadius: '8px',
+                                                color: 'hsl(var(--foreground))',
+                                                fontSize: '13px',
+                                            }}
+                                            labelStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                                            cursor={{ stroke: 'rgba(128,128,128,0.2)' }}
+                                        />
+
                                         <Area
                                             type="monotone"
                                             dataKey="amount"
-                                            stroke="currentColor"
-                                            className="text-primary"
+                                            stroke="#6366f1"
                                             fill="url(#poFill)"
                                             strokeWidth={2}
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
-                            )}
+                            </div>
                         </CardContent>
                     </Card>
 

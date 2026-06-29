@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Deliveryforms from '@/components/Deliveries/deliveryforms';
+import { Head } from '@inertiajs/react';
 
 interface PurchaseOrder {
     id: number;
@@ -26,7 +27,7 @@ export default function Index({ deliveries, purchaseOrders }: Props) {
 
     return (
         <div className="p-6 space-y-6">
-
+            <Head title="Deliveries" />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -45,7 +46,7 @@ export default function Index({ deliveries, purchaseOrders }: Props) {
                 {[
                     { label: 'Total Deliveries',    value: deliveries.length },
                     { label: 'With Invoice',        value: deliveries.filter(d => d.invoice_number).length },
-                    { label: 'With DR',             value: deliveries.filter(d => d.dr_number).length },
+                    { label: 'With Delivery Receipt',             value: deliveries.filter(d => d.dr_number).length },
                 ].map(stat => (
                     <div key={stat.label} className="bg-card border border-border rounded-xl px-4 py-3">
                         <p className="text-xs text-muted-foreground">{stat.label}</p>

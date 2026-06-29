@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import POForm from '@/components/PurchaseOrders/poforms';
-
+import { Head } from '@inertiajs/react';
 interface Supplier {
     id: number;
     company_name: string;
@@ -34,7 +34,7 @@ export default function Index({ suppliers, purchaseOrders }: Props) {
 
     return (
         <div className="p-6 space-y-6">
-
+            <Head title="Purchase Orders" />
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>

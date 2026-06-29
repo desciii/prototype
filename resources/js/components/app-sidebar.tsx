@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText} from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText, Import, ArrowLeftRight, ChartLine} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -20,7 +20,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
-        icon: LayoutGrid,
+        icon: ChartLine,
     },
   
   {
@@ -46,18 +46,18 @@ const mainNavItems: NavItem[] = [
         href: '/iar',
         icon: File,
     },
+    {
+    title: 'Import / Export CSV',
+    href: '/importexport',
+    icon: ArrowLeftRight, // import from lucide-react
+    },
 ];
 
 const footerNavItems: NavItem[] = [
     {
         title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
+        href: 'https://github.com/desciii/prototype',
         icon: FolderGit2,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
     },
 ];
 
