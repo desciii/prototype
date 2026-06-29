@@ -20,4 +20,6 @@ Route::get('/deliveries', [DeliveriesController::class, 'index'])->name('deliver
 Route::get('/iar', [IarController::class, 'index'])->name('iar.index');
 
 Route::get('/po', [POController::class, 'index'])->name('po.index');
+Route::get('/po/create', [POController::class, 'create'])->name('purchase-orders.create');
+Route::post('/po', [POController::class, 'store'])->name('purchase-orders.store');
 require __DIR__.'/settings.php';
