@@ -5,7 +5,7 @@ use App\Http\Controllers\SuppliesController;
 use App\Http\Controllers\DeliveriesController;
 use App\Http\Controllers\IarController;
 use App\Http\Controllers\POController;
-
+use App\Http\Controllers\DashboardController;
 
 Route::inertia('/', 'welcome')->name('home');
 
@@ -25,4 +25,6 @@ Route::post('/iar', [IarController::class, 'store'])->name('iar.store');
 Route::get('/po', [POController::class, 'index'])->name('po.index');
 Route::get('/po/create', [POController::class, 'create'])->name('purchase-orders.create');
 Route::post('/po', [POController::class, 'store'])->name('purchase-orders.store');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 require __DIR__.'/settings.php';
