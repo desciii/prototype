@@ -8,9 +8,15 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
+interface PurchaseOrder {
+    id: number;
+    po_number: string;
+}
+
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    purchaseOrders: PurchaseOrder[];
 }
 
 interface FieldProps {
@@ -47,28 +53,26 @@ function Field({ label, name, type = 'text', placeholder = '', required = false,
 }
 
 const emptyForm = {
-    company_name: '',
-    office_address: '',
-    tin: '',
-    email: '',
-    contact_number: '',
-    status: 'active',
-    internal_remarks: '',
+    purchase_order_id: '',
+    invoice_number: '',
+    invoice_date: '',
+    dr_number: '',
+    dr_date: '',
 };
 
-export default function Supplierforms({ open, onOpenChange }: Props) {
+export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Props) {
     const [data, setData] = useState(emptyForm);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.post('/suppliers', data, {
+        router.post('/deliveries', data, {
             onSuccess: () => {
                 onOpenChange(false);
                 setData(emptyForm);
@@ -82,70 +86,61 @@ export default function Supplierforms({ open, onOpenChange }: Props) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>New Supplier</DialogTitle>
+                    <DialogTitle>Record Delivery</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
 
-                    <Field
-                        label="Company Name" name="company_name"
-                        placeholder="e.g. ABC Trading Co."
-                        required value={data.company_name}
-                        onChange={handleChange} error={errors.company_name}
-                    />
-
-                    <Field
-                        label="Office Address" name="office_address"
-                        placeholder="e.g. 123 Main St, Davao City"
-                        value={data.office_address}
-                        onChange={handleChange} error={errors.office_address}
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <Field
-                            label="TIN" name="tin"
-                            placeholder="e.g. 123-456-789"
-                            value={data.tin}
-                            onChange={handleChange} error={errors.tin}
-                        />
-                        <Field
-                            label="Contact Number" name="contact_number"
-                            placeholder="e.g. 09171234567"
-                            value={data.contact_number}
-                            onChange={handleChange} error={errors.contact_number}
-                        />
-                    </div>
-
-                    <Field
-                        label="Email Address" name="email"
-                        type="email"
-                        placeholder="e.g. supplier@email.com"
-                        value={data.email}
-                        onChange={handleChange} error={errors.email}
-                    />
-
+                    {/* PO Number Dropdown */}
                     <div>
-                        <label className={labelClass}>Status</label>
+                        <label className={labelClass}>
+                            P.O Number <span className="text-red-500">*</span>
+                        </label>
                         <select
-                            name="status"
-                            value={data.status}
+                            name="purchase_order_id"
+                            value={data.purchase_order_id}
                             onChange={handleChange}
                             className={inputClass}
                         >
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
+                            <option value="">-- Select PO Number --</option>
+                            {purchaseOrders.map((po) => (
+                                <option key={po.id} value={po.id}>
+                                    {po.po_number}
+                                </option>
+                            ))}
                         </select>
+                        {errors.purchase_order_id && (
+                            <p className="text-red-500 text-xs mt-1">{errors.purchase_order_id}</p>
+                        )}
                     </div>
 
-                    <div>
-                        <label className={labelClass}>Internal Remarks</label>
-                        <textarea
-                            name="internal_remarks"
-                            value={data.internal_remarks}
-                            onChange={handleChange}
-                            rows={3}
-                            placeholder="Optional internal notes..."
-                            className={inputClass}
+                    <div className="grid grid-cols-2 gap-4">
+                        <Field
+                            label="Invoice Number" name="invoice_number"
+                            placeholder="e.g. INV-2024-001"
+                            value={data.invoice_number}
+                            onChange={handleChange} error={errors.invoice_number}
+                        />
+                        <Field
+                            label="Invoice Date" name="invoice_date"
+                            type="date"
+                            value={data.invoice_date}
+                            onChange={handleChange} error={errors.invoice_date}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Field
+                            label="DR Number" name="dr_number"
+                            placeholder="e.g. DR-2024-001"
+                            value={data.dr_number}
+                            onChange={handleChange} error={errors.dr_number}
+                        />
+                        <Field
+                            label="DR Date" name="dr_date"
+                            type="date"
+                            value={data.dr_date}
+                            onChange={handleChange} error={errors.dr_date}
                         />
                     </div>
 
@@ -154,7 +149,7 @@ export default function Supplierforms({ open, onOpenChange }: Props) {
                             Cancel
                         </Button>
                         <Button type="submit">
-                            Save Supplier
+                            Save Delivery
                         </Button>
                     </div>
 

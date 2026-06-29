@@ -8,9 +8,12 @@ use Illuminate\Http\Request;
 
 class SuppliesController extends Controller
 {
+    
     public function index()
     {
-        return Inertia::render('supplies/index');
+        return Inertia::render('supplies/index', [
+            'suppliers' => Supplier::latest()->get(),
+        ]);
     }
 
     public function store(Request $request)

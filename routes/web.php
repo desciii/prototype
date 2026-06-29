@@ -17,8 +17,10 @@ Route::get('/supplies', [SuppliesController::class, 'index'])->name('supplies.in
 Route::post('/suppliers', [SuppliesController::class, 'store'])->name('suppliers.store');
 
 Route::get('/deliveries', [DeliveriesController::class, 'index'])->name('deliveries.index');
+Route::post('/deliveries', [DeliveriesController::class, 'store'])->name('deliveries.store');
 
 Route::get('/iar', [IarController::class, 'index'])->name('iar.index');
+Route::post('/iar', [IarController::class, 'store'])->name('iar.store');
 
 Route::get('/po', [POController::class, 'index'])->name('po.index');
 Route::get('/po/create', [POController::class, 'create'])->name('purchase-orders.create');

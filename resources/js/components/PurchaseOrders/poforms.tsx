@@ -19,7 +19,6 @@ interface Props {
     suppliers: Supplier[];
 }
 
-// ✅ Field is now OUTSIDE the component
 interface FieldProps {
     label: string;
     name: string;
@@ -31,10 +30,13 @@ interface FieldProps {
     error?: string;
 }
 
+const inputClass = "w-full border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground";
+const labelClass = "block text-sm font-medium text-foreground mb-1";
+
 function Field({ label, name, type = 'text', placeholder = '', required = false, value, onChange, error }: FieldProps) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className={labelClass}>
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
             <input
@@ -43,7 +45,7 @@ function Field({ label, name, type = 'text', placeholder = '', required = false,
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={inputClass}
             />
             {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
         </div>
@@ -95,6 +97,7 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                     status: 'pending',
                     remarks: '',
                 });
+                setErrors({});
             },
             onError: (err) => setErrors(err),
         });
@@ -121,14 +124,14 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className={labelClass}>
                                 Supplier <span className="text-red-500">*</span>
                             </label>
                             <select
                                 name="supplier_id"
                                 value={data.supplier_id}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className={inputClass}
                             >
                                 <option value="">-- Select Supplier --</option>
                                 {suppliers.map((s) => (
@@ -157,12 +160,12 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                         <Field label="ORS / BUR Date" name="ors_bur_date" type="date" value={data.ors_bur_date} onChange={handleChange} />
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <label className={labelClass}>Status</label>
                             <select
                                 name="status"
                                 value={data.status}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className={inputClass}
                             >
                                 <option value="pending">Pending</option>
                                 <option value="partial">Partial</option>
@@ -173,14 +176,14 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                        <label className={labelClass}>Remarks</label>
                         <textarea
                             name="remarks"
                             value={data.remarks}
                             onChange={handleChange}
                             rows={3}
                             placeholder="Optional notes..."
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className={inputClass}
                         />
                     </div>
 
