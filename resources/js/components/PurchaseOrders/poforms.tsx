@@ -19,7 +19,38 @@ interface Props {
     suppliers: Supplier[];
 }
 
-export default function poforms({ open, onOpenChange, suppliers }: Props) {
+// ✅ Field is now OUTSIDE the component
+interface FieldProps {
+    label: string;
+    name: string;
+    type?: string;
+    placeholder?: string;
+    required?: boolean;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    error?: string;
+}
+
+function Field({ label, name, type = 'text', placeholder = '', required = false, value, onChange, error }: FieldProps) {
+    return (
+        <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+        </div>
+    );
+}
+
+export default function Poforms({ open, onOpenChange, suppliers }: Props) {
     const [data, setData] = useState({
         po_number: '',
         po_date: '',
@@ -69,29 +100,6 @@ export default function poforms({ open, onOpenChange, suppliers }: Props) {
         });
     };
 
-    const Field = ({ label, name, type = 'text', placeholder = '', required = false }: {
-        label: string;
-        name: string;
-        type?: string;
-        placeholder?: string;
-        required?: boolean;
-    }) => (
-        <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-                {label} {required && <span className="text-red-500">*</span>}
-            </label>
-            <input
-                type={type}
-                name={name}
-                value={data[name as keyof typeof data]}
-                onChange={handleChange}
-                placeholder={placeholder}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
-        </div>
-    );
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -102,17 +110,16 @@ export default function poforms({ open, onOpenChange, suppliers }: Props) {
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="P.O Number" name="po_number" placeholder="PO-2024-001" required />
-                        <Field label="P.O Date" name="po_date" type="date" required />
+                        <Field label="P.O Number" name="po_number" placeholder="PO-2024-001" required value={data.po_number} onChange={handleChange} error={errors.po_number} />
+                        <Field label="P.O Date" name="po_date" type="date" required value={data.po_date} onChange={handleChange} error={errors.po_date} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="PO Amount" name="po_amount" type="number" placeholder="0.00" required />
-                        <Field label="Unit / Office" name="unit_office" placeholder="Supply Management Unit" required />
+                        <Field label="PO Amount" name="po_amount" type="number" placeholder="0.00" required value={data.po_amount} onChange={handleChange} error={errors.po_amount} />
+                        <Field label="Unit / Office" name="unit_office" placeholder="Supply Management Unit" required value={data.unit_office} onChange={handleChange} error={errors.unit_office} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        {/* Supplier Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Supplier <span className="text-red-500">*</span>
@@ -133,23 +140,22 @@ export default function poforms({ open, onOpenChange, suppliers }: Props) {
                             {errors.supplier_id && <p className="text-red-500 text-xs mt-1">{errors.supplier_id}</p>}
                         </div>
 
-                        <Field label="Delivery Term" name="delivery_term" placeholder="e.g. 30 days" />
+                        <Field label="Delivery Term" name="delivery_term" placeholder="e.g. 30 days" value={data.delivery_term} onChange={handleChange} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Fund Cluster" name="fund_cluster" placeholder="e.g. 01" />
-                        <Field label="P.R Number" name="pr_number" placeholder="PR-2024-001" />
+                        <Field label="Fund Cluster" name="fund_cluster" placeholder="e.g. 01" value={data.fund_cluster} onChange={handleChange} />
+                        <Field label="P.R Number" name="pr_number" placeholder="PR-2024-001" value={data.pr_number} onChange={handleChange} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="P.R Date" name="pr_date" type="date" />
-                        <Field label="ORS / BUR No." name="ors_bur_number" placeholder="ORS-2024-001" />
+                        <Field label="P.R Date" name="pr_date" type="date" value={data.pr_date} onChange={handleChange} />
+                        <Field label="ORS / BUR No." name="ors_bur_number" placeholder="ORS-2024-001" value={data.ors_bur_number} onChange={handleChange} />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="ORS / BUR Date" name="ors_bur_date" type="date" />
+                        <Field label="ORS / BUR Date" name="ors_bur_date" type="date" value={data.ors_bur_date} onChange={handleChange} />
 
-                        {/* Status Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                             <select
@@ -166,7 +172,6 @@ export default function poforms({ open, onOpenChange, suppliers }: Props) {
                         </div>
                     </div>
 
-                    {/* Remarks */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
                         <textarea
@@ -179,7 +184,6 @@ export default function poforms({ open, onOpenChange, suppliers }: Props) {
                         />
                     </div>
 
-                    {/* Buttons */}
                     <div className="flex justify-end gap-3 pt-2">
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Cancel

@@ -9,9 +9,17 @@ use Illuminate\Http\Request;
 
 class POController extends Controller
 {
+    
     public function index()
     {
-        return Inertia::render('po/index');
+        return Inertia::render('po/index', [
+            'suppliers' => Supplier::select('id', 'company_name')
+                                    ->where('status', 'active')
+                                    ->get(),
+            'purchaseOrders' => PurchaseOrder::with('supplier:id,company_name')
+                                            ->latest()
+                                            ->get(),
+        ]);
     }
 
     public function create()
