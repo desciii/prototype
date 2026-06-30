@@ -42,12 +42,6 @@ const mainNavItems: NavItem[] = [
     },
 
     {
-        title: 'Registered Documents',
-        href: '/registered-documents',
-        icon: Newspaper,
-    },
-
-    {
         title: 'IAR Report',
         href: '/iar',
         icon: File,
