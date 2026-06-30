@@ -10,6 +10,7 @@ use App\Models\Delivery;
 use App\Models\Iar;
 use League\Csv\Reader;
 use League\Csv\Writer;
+use App\Models\SupplierEvaluation;
 
 class ImportExportController extends Controller
 {
@@ -21,7 +22,7 @@ class ImportExportController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'module' => 'required|in:suppliers,purchase_orders,deliveries,iars',
+            'module' => 'required|in:suppliers,purchase_orders,deliveries,iars,supplier_evaluations',
             'file'   => 'required|file|mimes:csv,txt',
         ]);
 
@@ -31,10 +32,11 @@ class ImportExportController extends Controller
 
         foreach ($records as $record) {
             match ($request->module) {
-                'suppliers'       => Supplier::create($record),
-                'purchase_orders' => PurchaseOrder::create($record),
-                'deliveries'      => Delivery::create($record),
-                'iars'            => Iar::create($record),
+                'suppliers'             => Supplier::create($record),
+                'purchase_orders'       => PurchaseOrder::create($record),
+                'deliveries'            => Delivery::create($record),
+                'iars'                  => Iar::create($record),
+                'supplier_evaluations'  => SupplierEvaluation::create($record),
             };
         }
 
@@ -44,14 +46,14 @@ class ImportExportController extends Controller
     public function export(Request $request)
     {
         $request->validate([
-            'module' => 'required|in:suppliers,purchase_orders,deliveries,iars',
+            'module' => 'required|in:suppliers,purchase_orders,deliveries,iars,supplier_evaluations',
         ]);
-
         $data = match ($request->module) {
-            'suppliers'       => Supplier::all()->toArray(),
-            'purchase_orders' => PurchaseOrder::all()->toArray(),
-            'deliveries'      => Delivery::all()->toArray(),
-            'iars'            => Iar::all()->toArray(),
+            'suppliers'             => Supplier::all()->toArray(),
+            'purchase_orders'       => PurchaseOrder::all()->toArray(),
+            'deliveries'            => Delivery::all()->toArray(),
+            'iars'                  => Iar::all()->toArray(),
+            'supplier_evaluations'  => SupplierEvaluation::all()->toArray(),
         };
 
         if (empty($data)) {

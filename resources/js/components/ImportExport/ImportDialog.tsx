@@ -5,6 +5,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
+
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
@@ -14,10 +15,11 @@ const inputClass = "w-full border border-input bg-background text-foreground rou
 const labelClass = "block text-sm font-medium text-foreground mb-1";
 
 const modules = [
-    { value: 'suppliers',       label: 'Suppliers' },
-    { value: 'purchase_orders', label: 'Purchase Orders' },
-    { value: 'deliveries',      label: 'Deliveries' },
-    { value: 'iars',            label: 'IAR Reports' },
+    { value: 'suppliers',            label: 'Suppliers' },
+    { value: 'purchase_orders',      label: 'Purchase Orders' },
+    { value: 'deliveries',           label: 'Deliveries' },
+    { value: 'iars',                 label: 'IAR Reports' },
+    { value: 'supplier_evaluations', label: 'Supplier Evaluations' },
 ];
 
 export default function ImportDialog({ open, onOpenChange }: Props) {
