@@ -13,9 +13,9 @@ return new class extends Migration
     {
     Schema::create('suppliers', function (Blueprint $table) {
         $table->id();
-        $table->string('company_name');
+        $table->string('company_name')->unique();
         $table->string('office_address')->nullable();
-        $table->string('tin')->nullable();
+        $table->string('tin')->nullable()->unique();
         $table->string('email')->nullable();
         $table->string('contact_number')->nullable();
         $table->enum('status', ['active', 'inactive'])->default('active');

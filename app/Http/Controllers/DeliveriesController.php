@@ -58,14 +58,20 @@ class DeliveriesController extends Controller
 
     public function store(Request $request)
     {
-    $validated = $request->validate([
-        'purchase_order_id' => 'required|exists:purchase_orders,id',
-        'invoice_number'    => 'nullable|string',
-        'invoice_date'      => 'nullable|date',
-        'dr_number'         => 'nullable|string',
-        'dr_date'           => 'nullable|date',
-        'document'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
-    ]);
+    $validated = $request->validate(
+        [
+            'purchase_order_id' => 'required|exists:purchase_orders,id',
+            'invoice_number'    => 'nullable|string|unique:deliveries,invoice_number',
+            'invoice_date'      => 'nullable|date',
+            'dr_number'         => 'nullable|string|unique:deliveries,dr_number',
+            'dr_date'           => 'nullable|date',
+            'document'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
+        ],
+        [
+            'invoice_number.unique' => 'This Invoice Number is already registered.',
+            'dr_number.unique'      => 'This Delivery Receipt Number is already registered.',
+        ]
+    );
 
     $purchaseOrder = PurchaseOrder::findOrFail($validated['purchase_order_id']);
 

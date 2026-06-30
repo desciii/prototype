@@ -14,10 +14,13 @@ return new class extends Migration
     Schema::create('deliveries', function (Blueprint $table) {
         $table->id();
         $table->foreignId('purchase_order_id')->constrained('purchase_orders')->cascadeOnDelete();
-        $table->string('invoice_number')->nullable();
+
+        $table->string('invoice_number')->nullable()->unique();
         $table->date('invoice_date')->nullable();
-        $table->string('dr_number')->nullable();
+
+        $table->string('dr_number')->nullable()->unique();
         $table->date('dr_date')->nullable();
+
         $table->timestamps();
     });
     }

@@ -54,20 +54,20 @@ class POController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'po_number'      => 'required|string|unique:purchase_orders,po_number',
+            'po_number'      => 'required|string|max:255|unique:purchase_orders,po_number',
             'po_date'        => 'required|date',
             'po_amount'      => 'required|numeric',
-            'unit_office'    => 'required|string',
+            'unit_office'    => 'required|string|max:255',
             'supplier_id'    => 'required|exists:suppliers,id',
-            'delivery_term'  => 'nullable|string',
-            'fund_cluster'   => 'nullable|string',
-            'pr_number'      => 'nullable|string',
+            'delivery_term'  => 'nullable|string|max:255',
+            'fund_cluster'   => 'nullable|string|max:255',
+            'pr_number'      => 'nullable|string|max:255|unique:purchase_orders,pr_number',
             'pr_date'        => 'nullable|date',
-            'ors_bur_number' => 'nullable|string',
+            'ors_bur_number' => 'nullable|string|max:255|unique:purchase_orders,ors_bur_number',
             'ors_bur_date'   => 'nullable|date',
             'status'         => 'required|in:pending,partial,completed,cancelled',
             'remarks'        => 'nullable|string',
-            'document'       => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB
+            'document'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         if ($request->hasFile('document')) {

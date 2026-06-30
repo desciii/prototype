@@ -150,12 +150,26 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
 
                     <div className="grid grid-cols-2 gap-4">
                         <Field label="Fund Cluster" name="fund_cluster" placeholder="e.g. 01" value={data.fund_cluster} onChange={handleChange} />
-                        <Field label="P.R Number" name="pr_number" placeholder="PR-2024-001" value={data.pr_number} onChange={handleChange} />
+                        <Field
+                            label="P.R Number"
+                            name="pr_number"
+                            placeholder="PR-2024-001"
+                            value={data.pr_number}
+                            onChange={handleChange}
+                            error={errors.pr_number}
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <Field label="P.R Date" name="pr_date" type="date" value={data.pr_date} onChange={handleChange} />
-                        <Field label="ORS / BUR No." name="ors_bur_number" placeholder="ORS-2024-001" value={data.ors_bur_number} onChange={handleChange} />
+                        <Field
+                            label="ORS / BUR No."
+                            name="ors_bur_number"
+                            placeholder="ORS-2024-001"
+                            value={data.ors_bur_number}
+                            onChange={handleChange}
+                            error={errors.ors_bur_number}
+                        />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

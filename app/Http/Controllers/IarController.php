@@ -49,7 +49,7 @@ class IarController extends Controller
         $validated = $request->validate([
             'iar_number'        => 'required|string|unique:iars,iar_number',
             'purchase_order_id' => 'required|exists:purchase_orders,id',
-            'delivery_id'       => 'nullable|exists:deliveries,id',
+            'delivery_id'       => 'required|exists:deliveries,id',
             'iar_date'          => 'required|date',
             'inspected_by'      => 'required|string',
             'inspection_date'   => 'required|date',

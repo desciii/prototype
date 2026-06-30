@@ -40,15 +40,21 @@ class SuppliesController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'company_name'    => 'required|string',
-            'office_address'  => 'nullable|string',
-            'tin'             => 'nullable|string',
-            'email'           => 'nullable|email',
-            'contact_number'  => 'nullable|string',
-            'status'          => 'required|in:active,inactive',
-            'internal_remarks'=> 'nullable|string',
-        ]);
+        $validated = $request->validate(
+            [
+                'company_name' => 'required|string|max:255|unique:suppliers,company_name',
+                'office_address' => 'nullable|string|max:255',
+                'tin' => 'nullable|string|max:255|unique:suppliers,tin',
+                'email' => 'nullable|email|max:255',
+                'contact_number' => 'nullable|string|max:255',
+                'status' => 'required|in:active,inactive',
+                'internal_remarks' => 'nullable|string',
+            ],
+            [
+                'company_name.unique' => 'This company is already registered.',
+                'tin.unique' => 'This TIN is already registered.',
+            ]
+        );
 
         Supplier::create($validated);
 
