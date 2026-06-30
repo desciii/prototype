@@ -67,7 +67,15 @@ class POController extends Controller
             'ors_bur_date'   => 'nullable|date',
             'status'         => 'required|in:pending,partial,completed,cancelled',
             'remarks'        => 'nullable|string',
+            'document'       => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB
         ]);
+
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')
+                ->store('purchase_orders', 'public');
+        }
+
+        unset($validated['document']);
 
         PurchaseOrder::create($validated);
 

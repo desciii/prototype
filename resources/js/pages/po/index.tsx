@@ -18,6 +18,7 @@ interface PurchaseOrder {
     unit_office: string;
     status: string;
     supplier: Supplier;
+    document_path: string | null;
 }
 
 interface PaginatedPOs {
@@ -139,12 +140,13 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Unit / Office</th>
                             <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Amount</th>
                             <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
+                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Scanned Document</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                         {purchaseOrders.data.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="text-center py-16 text-muted-foreground">
+                                <td colSpan={7} className="text-center py-16 text-muted-foreground">
                                     <p className="text-base mb-1">
                                         {filters.search ? `No results for "${filters.search}"` : 'No purchase orders yet'}
                                     </p>
@@ -167,6 +169,20 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[po.status] ?? 'bg-muted text-muted-foreground'}`}>
                                             {po.status}
                                         </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        {po.document_path ? (
+                                            <a
+                                                href={`/storage/${po.document_path}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary hover:underline text-xs font-medium"
+                                            >
+                                                View
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-xs">—</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))

@@ -52,23 +52,25 @@ function Field({ label, name, type = 'text', placeholder = '', required = false,
     );
 }
 
-export default function Poforms({ open, onOpenChange, suppliers }: Props) {
-    const [data, setData] = useState({
-        po_number: '',
-        po_date: '',
-        po_amount: '',
-        unit_office: '',
-        supplier_id: '',
-        delivery_term: '',
-        fund_cluster: '',
-        pr_number: '',
-        pr_date: '',
-        ors_bur_number: '',
-        ors_bur_date: '',
-        status: 'pending',
-        remarks: '',
-    });
+const emptyForm = {
+    po_number: '',
+    po_date: '',
+    po_amount: '',
+    unit_office: '',
+    supplier_id: '',
+    delivery_term: '',
+    fund_cluster: '',
+    pr_number: '',
+    pr_date: '',
+    ors_bur_number: '',
+    ors_bur_date: '',
+    status: 'pending',
+    remarks: '',
+};
 
+export default function Poforms({ open, onOpenChange, suppliers }: Props) {
+    const [data, setData] = useState(emptyForm);
+    const [document, setDocument] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (
@@ -77,26 +79,26 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDocument(e.target.files?.[0] ?? null);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.post('/po', data, {
+
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        if (document) {
+            formData.append('document', document);
+        }
+
+        router.post('/po', formData, {
             onSuccess: () => {
                 onOpenChange(false);
-                setData({
-                    po_number: '',
-                    po_date: '',
-                    po_amount: '',
-                    unit_office: '',
-                    supplier_id: '',
-                    delivery_term: '',
-                    fund_cluster: '',
-                    pr_number: '',
-                    pr_date: '',
-                    ors_bur_number: '',
-                    ors_bur_date: '',
-                    status: 'pending',
-                    remarks: '',
-                });
+                setData(emptyForm);
+                setDocument(null);
                 setErrors({});
             },
             onError: (err) => setErrors(err),
@@ -173,6 +175,23 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                                 <option value="cancelled">Cancelled</option>
                             </select>
                         </div>
+                    </div>
+
+                    {/* Document Upload */}
+                    <div>
+                        <label className={labelClass}>Scanned Document (JPG, PNG, or PDF)</label>
+                        <input
+                            type="file"
+                            accept=".jpg,.jpeg,.png,.pdf"
+                            onChange={handleFileChange}
+                            className={inputClass}
+                        />
+                        {document && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                                Selected: {document.name}
+                            </p>
+                        )}
+                        {errors.document && <p className="text-red-500 text-xs mt-1">{errors.document}</p>}
                     </div>
 
                     <div>
