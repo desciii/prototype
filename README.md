@@ -97,12 +97,7 @@ pnpm run dev
 
 ## Planned Features
 
-- [ ] Dashboard with recent POs and summary statistics
 - [ ] Post PO Transactions (extensions, terminations, waivers)
-- [ ] Export to CSV (OVPAD function)
-- [ ] Bulk CSV import for Suppliers, POs, and Deliveries
-- [ ] Supplier Performance Rating System (1–4 scale + SPE document upload)
-- [ ] PDF attachment per Purchase Order
 - [ ] System Audit Logs
 - [ ] User Management with role/level assignment
 - [ ] Enhanced sidebar and UI/UX improvements
