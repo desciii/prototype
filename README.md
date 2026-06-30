@@ -104,8 +104,5 @@ pnpm run dev
 
 ---
 
-## Project Info
 
 **Developer:** desciii  
-**Program:** BSIT - Business Technology Management  
-**School:** University of Southeastern Philippines
