@@ -10,17 +10,37 @@ use Illuminate\Http\Request;
 
 class IarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $iars = Iar::with([
+                'purchaseOrder:id,po_number',
+                'delivery:id,invoice_number',
+            ])
+            ->when($search, function ($query, $search) {
+                $query->where('iar_number', 'like', "%{$search}%")
+                    ->orWhere('inspected_by', 'like', "%{$search}%")
+                    ->orWhereHas('purchaseOrder', function ($q) use ($search) {
+                        $q->where('po_number', 'like', "%{$search}%");
+                    });
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('iar/index', [
-            'iars' => Iar::with([
-                            'purchaseOrder:id,po_number',
-                            'delivery:id,invoice_number',
-                        ])
-                        ->latest()
-                        ->get(),
+            'iars' => $iars,
             'purchaseOrders' => PurchaseOrder::select('id', 'po_number')->get(),
             'deliveries'     => Delivery::select('id', 'invoice_number', 'purchase_order_id')->get(),
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+            ],
         ]);
     }
 

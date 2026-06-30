@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Supplierforms from '@/components/Suppliers/supplierforms';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Search } from 'lucide-react';
 
 interface Supplier {
     id: number;
@@ -14,8 +16,23 @@ interface Supplier {
     internal_remarks: string;
 }
 
+interface PaginatedSuppliers {
+    data: Supplier[];
+    links: { url: string | null; label: string; active: boolean }[];
+}
+
+interface Filters {
+    search: string | null;
+}
+
+interface Filters {
+    search: string | null;
+    status: string | null;
+}
+
 interface Props {
-    suppliers: Supplier[];
+    suppliers: PaginatedSuppliers;
+    filters: Filters;
 }
 
 const statusColors: Record<string, string> = {
@@ -23,13 +40,43 @@ const statusColors: Record<string, string> = {
     inactive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
-export default function Index({ suppliers }: Props) {
+export default function Index({ suppliers, filters }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [status, setStatus] = useState(filters.status ?? '');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        router.get('/supplies', { search, status }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handleStatusChange = (value: string) => {
+        setStatus(value);
+        router.get('/supplies', { search, status: value }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handleClear = () => {
+        setSearch('');
+        setStatus('');
+        router.get('/supplies', {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     return (
         <div className="p-6 space-y-6">
             <Head title="Suppliers" />
-            {/* Header */}
+
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Suppliers</h1>
@@ -42,21 +89,36 @@ export default function Index({ suppliers }: Props) {
                 </Button>
             </div>
 
-            {/* Stats strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {[
-                    { label: 'Total Suppliers', value: suppliers.length },
-                    { label: 'Active',          value: suppliers.filter(s => s.status === 'active').length },
-                    { label: 'Inactive',        value: suppliers.filter(s => s.status === 'inactive').length },
-                ].map(stat => (
-                    <div key={stat.label} className="bg-card border border-border rounded-xl px-4 py-3">
-                        <p className="text-xs text-muted-foreground">{stat.label}</p>
-                        <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    </div>
-                ))}
-            </div>
+            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
+                <div className="relative flex-1 max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        placeholder="Search company, email, TIN, contact..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9"
+                    />
+                </div>
 
-            {/* Table */}
+                <select
+                    value={status}
+                    onChange={(e) => handleStatusChange(e.target.value)}
+                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+
+                <Button type="submit" variant="secondary">Search</Button>
+                {(filters.search || filters.status) && (
+                    <Button type="button" variant="ghost" onClick={handleClear}>
+                        Clear
+                    </Button>
+                )}
+            </form>
+
             <div className="bg-card border border-border rounded-xl overflow-hidden">
                 <table className="w-full text-sm">
                     <thead className="bg-muted/50 border-b border-border">
@@ -70,15 +132,19 @@ export default function Index({ suppliers }: Props) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                        {suppliers.length === 0 ? (
+                        {suppliers.data.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="text-center py-16 text-muted-foreground">
-                                    <p className="text-base mb-1">No suppliers yet</p>
-                                    <p className="text-xs">Click "Add Supplier" to get started</p>
+                                    <p className="text-base mb-1">
+                                        {filters.search || filters.status ? 'No matching suppliers' : 'No suppliers yet'}
+                                    </p>
+                                    <p className="text-xs">
+                                        {filters.search || filters.status ? 'Try different filters' : 'Click "Add Supplier" to get started'}
+                                    </p>
                                 </td>
                             </tr>
                         ) : (
-                            suppliers.map((supplier) => (
+                            suppliers.data.map((supplier) => (
                                 <tr key={supplier.id} className="hover:bg-muted/40 transition-colors">
                                     <td className="px-4 py-3 font-semibold text-foreground">{supplier.company_name}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{supplier.office_address || '—'}</td>
@@ -96,6 +162,26 @@ export default function Index({ suppliers }: Props) {
                     </tbody>
                 </table>
             </div>
+
+            {suppliers.data.length > 0 && (
+                <div className="flex items-center justify-center gap-1 flex-wrap">
+                    {suppliers.links.map((link, i) => (
+                        <Link
+                            key={i}
+                            href={link.url ?? '#'}
+                            preserveScroll
+                            preserveState
+                            className={`px-3 py-1.5 rounded-md text-sm border transition-colors
+                                ${link.active
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-card text-foreground border-border hover:bg-muted/50'}
+                                ${!link.url ? 'opacity-40 pointer-events-none' : ''}
+                            `}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ))}
+                </div>
+            )}
 
             <Supplierforms
                 open={dialogOpen}

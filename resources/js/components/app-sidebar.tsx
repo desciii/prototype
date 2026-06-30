@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText, Import, ArrowLeftRight, ChartLine} from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText, Import, ArrowLeftRight, ChartLine, Newspaper} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -42,10 +42,17 @@ const mainNavItems: NavItem[] = [
     },
 
     {
+        title: 'Registered Documents',
+        href: '/registered-documents',
+        icon: Newspaper,
+    },
+
+    {
         title: 'IAR Report',
         href: '/iar',
         icon: File,
     },
+
     {
     title: 'Import / Export CSV',
     href: '/importexport',

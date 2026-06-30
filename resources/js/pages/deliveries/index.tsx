@@ -1,11 +1,18 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Deliveryforms from '@/components/Deliveries/deliveryforms';
-import { Head } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
+import { Search } from 'lucide-react';
 
 interface PurchaseOrder {
     id: number;
     po_number: string;
+}
+
+interface Supplier {
+    id: number;
+    company_name: string;
 }
 
 interface Delivery {
@@ -15,20 +22,66 @@ interface Delivery {
     dr_number: string;
     dr_date: string;
     purchase_order: PurchaseOrder;
+    supplier: Supplier | null;
+}
+
+interface PaginatedDeliveries {
+    data: Delivery[];
+    links: { url: string | null; label: string; active: boolean }[];
+}
+
+interface Filters {
+    search: string | null;
+}
+
+interface Filters {
+    search: string | null;
+    po_id: string | null;
 }
 
 interface Props {
-    deliveries: Delivery[];
+    deliveries: PaginatedDeliveries;
     purchaseOrders: PurchaseOrder[];
+    filters: Filters;
 }
 
-export default function Index({ deliveries, purchaseOrders }: Props) {
+export default function Index({ deliveries, purchaseOrders, filters }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [search, setSearch] = useState(filters.search ?? '');
+    const [poId, setPoId] = useState(filters.po_id ?? '');
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        router.get('/deliveries', { search, po_id: poId }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handlePoChange = (value: string) => {
+        setPoId(value);
+        router.get('/deliveries', { search, po_id: value }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
+
+    const handleClear = () => {
+        setSearch('');
+        setPoId('');
+        router.get('/deliveries', {}, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
+    };
 
     return (
         <div className="p-6 space-y-6">
             <Head title="Deliveries" />
-            {/* Header */}
+
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Deliveries</h1>
@@ -41,26 +94,43 @@ export default function Index({ deliveries, purchaseOrders }: Props) {
                 </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {[
-                    { label: 'Total Deliveries',    value: deliveries.length },
-                    { label: 'With Invoice',        value: deliveries.filter(d => d.invoice_number).length },
-                    { label: 'With Delivery Receipt',             value: deliveries.filter(d => d.dr_number).length },
-                ].map(stat => (
-                    <div key={stat.label} className="bg-card border border-border rounded-xl px-4 py-3">
-                        <p className="text-xs text-muted-foreground">{stat.label}</p>
-                        <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    </div>
-                ))}
-            </div>
+            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
+                <div className="relative flex-1 max-w-sm">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                        type="text"
+                        placeholder="Search PO, invoice, DR number..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9"
+                    />
+                </div>
 
-            {/* Table */}
+                <select
+                    value={poId}
+                    onChange={(e) => handlePoChange(e.target.value)}
+                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                    <option value="">All Purchase Orders</option>
+                    {purchaseOrders.map((po) => (
+                        <option key={po.id} value={po.id}>{po.po_number}</option>
+                    ))}
+                </select>
+
+                <Button type="submit" variant="secondary">Search</Button>
+                {(filters.search || filters.po_id) && (
+                    <Button type="button" variant="ghost" onClick={handleClear}>
+                        Clear
+                    </Button>
+                )}
+            </form>
+
             <div className="bg-card border border-border rounded-xl overflow-hidden">
                 <table className="w-full text-sm">
                     <thead className="bg-muted/50 border-b border-border">
                         <tr>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">PO Number</th>
+                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Supplier</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Invoice No.</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Invoice Date</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">DR Number</th>
@@ -68,18 +138,25 @@ export default function Index({ deliveries, purchaseOrders }: Props) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
-                        {deliveries.length === 0 ? (
+                        {deliveries.data.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="text-center py-16 text-muted-foreground">
-                                    <p className="text-base mb-1">No deliveries recorded yet</p>
-                                    <p className="text-xs">Click "Record Delivery" to get started</p>
+                                <td colSpan={6} className="text-center py-16 text-muted-foreground">
+                                    <p className="text-base mb-1">
+                                        {filters.search || filters.po_id ? 'No matching deliveries' : 'No deliveries recorded yet'}
+                                    </p>
+                                    <p className="text-xs">
+                                        {filters.search || filters.po_id ? 'Try different filters' : 'Click "Record Delivery" to get started'}
+                                    </p>
                                 </td>
                             </tr>
                         ) : (
-                            deliveries.map((delivery) => (
+                            deliveries.data.map((delivery) => (
                                 <tr key={delivery.id} className="hover:bg-muted/40 transition-colors">
                                     <td className="px-4 py-3 font-semibold text-foreground">
                                         {delivery.purchase_order?.po_number ?? '—'}
+                                    </td>
+                                    <td className="px-4 py-3 text-muted-foreground">
+                                        {delivery.supplier?.company_name ?? '—'}
                                     </td>
                                     <td className="px-4 py-3 text-muted-foreground">{delivery.invoice_number || '—'}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{delivery.invoice_date || '—'}</td>
@@ -91,6 +168,26 @@ export default function Index({ deliveries, purchaseOrders }: Props) {
                     </tbody>
                 </table>
             </div>
+
+            {deliveries.data.length > 0 && (
+                <div className="flex items-center justify-center gap-1 flex-wrap">
+                    {deliveries.links.map((link, i) => (
+                        <Link
+                            key={i}
+                            href={link.url ?? '#'}
+                            preserveScroll
+                            preserveState
+                            className={`px-3 py-1.5 rounded-md text-sm border transition-colors
+                                ${link.active
+                                    ? 'bg-primary text-primary-foreground border-primary'
+                                    : 'bg-card text-foreground border-border hover:bg-muted/50'}
+                                ${!link.url ? 'opacity-40 pointer-events-none' : ''}
+                            `}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ))}
+                </div>
+            )}
 
             <Deliveryforms
                 open={dialogOpen}

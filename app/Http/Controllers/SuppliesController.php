@@ -9,10 +9,30 @@ use Illuminate\Http\Request;
 class SuppliesController extends Controller
 {
     
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $suppliers = Supplier::when($search, function ($query, $search) {
+                $query->where('company_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('tin', 'like', "%{$search}%")
+                    ->orWhere('contact_number', 'like', "%{$search}%");
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('supplies/index', [
-            'suppliers' => Supplier::latest()->get(),
+            'suppliers' => $suppliers,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+            ],
         ]);
     }
 

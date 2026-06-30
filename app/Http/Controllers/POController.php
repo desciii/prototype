@@ -10,15 +10,35 @@ use Illuminate\Http\Request;
 class POController extends Controller
 {
     
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $purchaseOrders = PurchaseOrder::with('supplier:id,company_name')
+            ->when($search, function ($query, $search) {
+                $query->where('po_number', 'like', "%{$search}%")
+                    ->orWhere('unit_office', 'like', "%{$search}%")
+                    ->orWhereHas('supplier', function ($q) use ($search) {
+                        $q->where('company_name', 'like', "%{$search}%");
+                    });
+            })
+            ->when($status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('po/index', [
             'suppliers' => Supplier::select('id', 'company_name')
                                     ->where('status', 'active')
                                     ->get(),
-            'purchaseOrders' => PurchaseOrder::with('supplier:id,company_name')
-                                            ->latest()
-                                            ->get(),
+            'purchaseOrders' => $purchaseOrders,
+            'filters' => [
+                'search' => $search,
+                'status' => $status,
+            ],
         ]);
     }
 

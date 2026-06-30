@@ -9,14 +9,37 @@ use Illuminate\Http\Request;
 
 class DeliveriesController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        $poId = $request->input('po_id');
+
+        $deliveries = Delivery::with([
+                'purchaseOrder:id,po_number',
+                'supplier:id,company_name',
+            ])
+            ->when($search, function ($query, $search) {
+                $query->where('invoice_number', 'like', "%{$search}%")
+                    ->orWhere('dr_number', 'like', "%{$search}%")
+                    ->orWhereHas('purchaseOrder', function ($q) use ($search) {
+                        $q->where('po_number', 'like', "%{$search}%");
+                    });
+            })
+            ->when($poId, function ($query, $poId) {
+                $query->where('purchase_order_id', $poId);
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('deliveries/index', [
-            'deliveries' => Delivery::with('purchaseOrder:id,po_number,supplier_id')
-                                     ->latest()
-                                     ->get(),
-            'purchaseOrders' => PurchaseOrder::select('id', 'po_number')
-                                              ->get(),
+            'deliveries' => $deliveries,
+            'purchaseOrders' => PurchaseOrder::select('id', 'po_number')->get(),
+            'filters' => [
+                'search' => $search,
+                'po_id'  => $poId,
+            ],
         ]);
     }
 
@@ -29,6 +52,9 @@ class DeliveriesController extends Controller
             'dr_number'         => 'nullable|string',
             'dr_date'           => 'nullable|date',
         ]);
+
+        $po = PurchaseOrder::findOrFail($validated['purchase_order_id']);
+        $validated['supplier_id'] = $po->supplier_id;
 
         Delivery::create($validated);
 
