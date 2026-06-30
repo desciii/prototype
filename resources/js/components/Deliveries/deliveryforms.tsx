@@ -62,6 +62,7 @@ const emptyForm = {
 
 export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Props) {
     const [data, setData] = useState(emptyForm);
+    const [document, setDocument] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (
@@ -70,12 +71,26 @@ export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Pr
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDocument(e.target.files?.[0] ?? null);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.post('/deliveries', data, {
+
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, String(value));
+        });
+        if (document) {
+            formData.append('document', document);
+        }
+
+        router.post('/deliveries', formData, {
             onSuccess: () => {
                 onOpenChange(false);
                 setData(emptyForm);
+                setDocument(null);
                 setErrors({});
             },
             onError: (err) => setErrors(err),
@@ -91,7 +106,6 @@ export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Pr
 
                 <form onSubmit={handleSubmit} className="space-y-4 mt-2">
 
-                    {/* PO Number Dropdown */}
                     <div>
                         <label className={labelClass}>
                             P.O Number <span className="text-red-500">*</span>
@@ -142,6 +156,20 @@ export default function Deliveryforms({ open, onOpenChange, purchaseOrders }: Pr
                             value={data.dr_date}
                             onChange={handleChange} error={errors.dr_date}
                         />
+                    </div>
+
+                    <div>
+                        <label className={labelClass}>Scanned Receipt (PDF/JPG/PNG)</label>
+                        <input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={handleFileChange}
+                            className={inputClass}
+                        />
+                        {document && (
+                            <p className="text-xs text-muted-foreground mt-1">Selected: {document.name}</p>
+                        )}
+                        {errors.document && <p className="text-red-500 text-xs mt-1">{errors.document}</p>}
                     </div>
 
                     <div className="flex justify-end gap-3 pt-2">

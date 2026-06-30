@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Delivery extends Model
 {
     protected $fillable = [
-    'purchase_order_id',
-    'supplier_id',
-    'invoice_number',
-    'invoice_date',
-    'dr_number',
-    'dr_date',
+        'purchase_order_id',
+        'invoice_number',
+        'invoice_date',
+        'dr_number',
+        'dr_date',
+        'document_path',
     ];
 
     public function supplier()

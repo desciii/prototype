@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Supplier;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
 class SuppliesController extends Controller
@@ -29,6 +30,7 @@ class SuppliesController extends Controller
 
         return Inertia::render('supplies/index', [
             'suppliers' => $suppliers,
+            'purchaseOrders' => PurchaseOrder::select('id', 'po_number', 'supplier_id', 'po_amount')->get(),
             'filters' => [
                 'search' => $search,
                 'status' => $status,

@@ -7,6 +7,7 @@ use App\Http\Controllers\IarController;
 use App\Http\Controllers\POController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImportExportController;
+use App\Http\Controllers\SupplierEvaluationController;
 
 Route::inertia('/', 'welcome')->name('home');
 
@@ -30,5 +31,8 @@ Route::post('/po', [POController::class, 'store'])->name('purchase-orders.store'
 Route::get('/importexport', [ImportExportController::class, 'index'])->name('importexport.index');
 Route::post('/import', [ImportExportController::class, 'import'])->name('import');
 Route::get('/export', [ImportExportController::class, 'export'])->name('export');
+
+Route::get('/supplier-evaluations', [SupplierEvaluationController::class, 'index'])->name('supplier-evaluations.index');
+Route::post('/supplier-evaluations', [SupplierEvaluationController::class, 'store'])->name('supplier-evaluations.store');
 
 require __DIR__.'/settings.php';

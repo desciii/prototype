@@ -24,6 +24,7 @@ interface Iar {
     inspection_date: string;
     status: string;
     remarks: string;
+    document_path: string | null;
     purchase_order: PurchaseOrder;
     delivery: Delivery | null;
 }
@@ -31,10 +32,6 @@ interface Iar {
 interface PaginatedIars {
     data: Iar[];
     links: { url: string | null; label: string; active: boolean }[];
-}
-
-interface Filters {
-    search: string | null;
 }
 
 interface Filters {
@@ -100,7 +97,7 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                     </p>
                 </div>
                 <Button onClick={() => setDialogOpen(true)}>
-                    New IAR
+                    Add New Report
                 </Button>
             </div>
 
@@ -145,12 +142,13 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Inspected By</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Inspection Date</th>
                             <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
+                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Document</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                         {iars.data.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="text-center py-16 text-muted-foreground">
+                                <td colSpan={7} className="text-center py-16 text-muted-foreground">
                                     <p className="text-base mb-1">
                                         {filters.search || filters.status ? 'No matching IAR entries' : 'No IAR entries yet'}
                                     </p>
@@ -171,6 +169,20 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[iar.status] ?? 'bg-muted text-muted-foreground'}`}>
                                             {iar.status}
                                         </span>
+                                    </td>
+                                    <td className="px-4 py-3 text-center">
+                                        {iar.document_path !== null ? (
+                                            <a
+                                                href={`/storage/${iar.document_path}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary hover:underline text-xs font-medium"
+                                            >
+                                                View
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-xs">—</span>
+                                        )}
                                     </td>
                                 </tr>
                             ))

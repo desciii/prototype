@@ -51,10 +51,14 @@ class DeliveriesController extends Controller
             'invoice_date'      => 'nullable|date',
             'dr_number'         => 'nullable|string',
             'dr_date'           => 'nullable|date',
+            'document'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
         ]);
 
-        $po = PurchaseOrder::findOrFail($validated['purchase_order_id']);
-        $validated['supplier_id'] = $po->supplier_id;
+        if ($request->hasFile('document')) {
+            $validated['document_path'] = $request->file('document')->store('deliveries', 'public');
+        }
+
+        unset($validated['document']);
 
         Delivery::create($validated);
 

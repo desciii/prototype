@@ -27,4 +27,10 @@ class PurchaseOrder extends Model
     {
         return $this->hasOne(Iar::class);
     }
+
+    public function evaluation()
+    {
+        return $this->hasOne(SupplierEvaluation::class);
+    }
+
 }

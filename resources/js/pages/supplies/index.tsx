@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import Supplierforms from '@/components/Suppliers/supplierforms';
 import { Head, Link, router } from '@inertiajs/react';
 import { Search } from 'lucide-react';
+import Evaluationforms from '@/components/Suppliers/evaluationforms';
 
 interface Supplier {
     id: number;
@@ -33,6 +34,7 @@ interface Filters {
 interface Props {
     suppliers: PaginatedSuppliers;
     filters: Filters;
+    purchaseOrders: { id: number; po_number: string; supplier_id: number; po_amount: number }[];
 }
 
 const statusColors: Record<string, string> = {
@@ -40,8 +42,9 @@ const statusColors: Record<string, string> = {
     inactive: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
 };
 
-export default function Index({ suppliers, filters }: Props) {
+export default function Index({ suppliers, filters, purchaseOrders }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [evalDialogOpen, setEvalDialogOpen] = useState(false);
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
 
@@ -84,9 +87,17 @@ export default function Index({ suppliers, filters }: Props) {
                         Manage your supplier directory
                     </p>
                 </div>
-                <Button onClick={() => setDialogOpen(true)}>
-                    Add Supplier
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setEvalDialogOpen(true)}>
+                        Evaluate Supplier
+                    </Button>
+                    <Link href="/supplier-evaluations">
+                        <Button variant="outline">View Ratings</Button>
+                    </Link>
+                    <Button onClick={() => setDialogOpen(true)}>
+                        Add Supplier
+                    </Button>
+                </div>
             </div>
 
             <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
@@ -183,10 +194,13 @@ export default function Index({ suppliers, filters }: Props) {
                 </div>
             )}
 
-            <Supplierforms
-                open={dialogOpen}
-                onOpenChange={setDialogOpen}
+            <Supplierforms open={dialogOpen} onOpenChange={setDialogOpen} />
+            <Evaluationforms
+                open={evalDialogOpen}
+                onOpenChange={setEvalDialogOpen}
+                purchaseOrders={purchaseOrders}
             />
+
         </div>
     );
 }

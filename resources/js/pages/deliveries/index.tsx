@@ -21,6 +21,7 @@ interface Delivery {
     invoice_date: string;
     dr_number: string;
     dr_date: string;
+    document_path: string | null;
     purchase_order: PurchaseOrder;
     supplier: Supplier | null;
 }
@@ -28,10 +29,6 @@ interface Delivery {
 interface PaginatedDeliveries {
     data: Delivery[];
     links: { url: string | null; label: string; active: boolean }[];
-}
-
-interface Filters {
-    search: string | null;
 }
 
 interface Filters {
@@ -135,12 +132,13 @@ export default function Index({ deliveries, purchaseOrders, filters }: Props) {
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Invoice Date</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">DR Number</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">DR Date</th>
+                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Scanned Document</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
                         {deliveries.data.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="text-center py-16 text-muted-foreground">
+                                <td colSpan={7} className="text-center py-16 text-muted-foreground">
                                     <p className="text-base mb-1">
                                         {filters.search || filters.po_id ? 'No matching deliveries' : 'No deliveries recorded yet'}
                                     </p>
@@ -162,6 +160,20 @@ export default function Index({ deliveries, purchaseOrders, filters }: Props) {
                                     <td className="px-4 py-3 text-muted-foreground">{delivery.invoice_date || '—'}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{delivery.dr_number || '—'}</td>
                                     <td className="px-4 py-3 text-muted-foreground">{delivery.dr_date || '—'}</td>
+                                    <td className="px-4 py-3 text-center">
+                                        {delivery.document_path !== null ? (
+                                            <a
+                                                href={`/storage/${delivery.document_path}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary hover:underline text-xs font-medium"
+                                            >
+                                                View
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-xs">—</span>
+                                        )}
+                                    </td>
                                 </tr>
                             ))
                         )}

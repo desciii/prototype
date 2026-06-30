@@ -72,9 +72,9 @@ const emptyForm = {
 
 export default function Iarforms({ open, onOpenChange, purchaseOrders, deliveries }: Props) {
     const [data, setData] = useState(emptyForm);
+    const [document, setDocument] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Filter deliveries based on selected PO
     const filteredDeliveries = data.purchase_order_id
         ? deliveries.filter(d => String(d.purchase_order_id) === String(data.purchase_order_id))
         : deliveries;
@@ -84,7 +84,6 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
     ) => {
         const { name, value } = e.target;
 
-        // Reset delivery when PO changes
         if (name === 'purchase_order_id') {
             setData({ ...data, purchase_order_id: value, delivery_id: '' });
         } else {
@@ -92,12 +91,26 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDocument(e.target.files?.[0] ?? null);
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.post('/iar', data, {
+
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, String(value));
+        });
+        if (document) {
+            formData.append('document', document);
+        }
+
+        router.post('/iar', formData, {
             onSuccess: () => {
                 onOpenChange(false);
                 setData(emptyForm);
+                setDocument(null);
                 setErrors({});
             },
             onError: (err) => setErrors(err),
@@ -128,7 +141,6 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                         />
                     </div>
 
-                    {/* PO Number */}
                     <div>
                         <label className={labelClass}>
                             P.O Number <span className="text-red-500">*</span>
@@ -151,7 +163,6 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                         )}
                     </div>
 
-                    {/* Delivery - filtered by selected PO */}
                     <div>
                         <label className={labelClass}>Delivery / Invoice</label>
                         <select
@@ -191,7 +202,6 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                         />
                     </div>
 
-                    {/* Status */}
                     <div>
                         <label className={labelClass}>Status</label>
                         <select
@@ -209,7 +219,6 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                         )}
                     </div>
 
-                    {/* Remarks */}
                     <div>
                         <label className={labelClass}>Remarks</label>
                         <textarea
@@ -220,6 +229,20 @@ export default function Iarforms({ open, onOpenChange, purchaseOrders, deliverie
                             placeholder="Optional notes..."
                             className={inputClass}
                         />
+                    </div>
+
+                    <div>
+                        <label className={labelClass}>Scanned IAR Document (PDF/JPG/PNG)</label>
+                        <input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            onChange={handleFileChange}
+                            className={inputClass}
+                        />
+                        {document && (
+                            <p className="text-xs text-muted-foreground mt-1">Selected: {document.name}</p>
+                        )}
+                        {errors.document && <p className="text-red-500 text-xs mt-1">{errors.document}</p>}
                     </div>
 
                     <div className="flex justify-end gap-3 pt-2">
