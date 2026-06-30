@@ -128,85 +128,156 @@ export default function Evaluations({ evaluations, filters }: Props) {
                 )}
             </form>
 
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-muted/50 border-b border-border">
-                        <tr>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Date</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Supplier</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">PO Number</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Requesting Office</th>
-                            <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Amount</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Quality</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Timeliness</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Compliance</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Overall</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Scanned Document</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {evaluations.data.length === 0 ? (
+            <div className="hidden md:block bg-card border border-border rounded-xl overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead className="bg-muted/50 border-b border-border">
                             <tr>
-                                <td colSpan={10} className="text-center py-16 text-muted-foreground">
-                                    <p className="text-base mb-1">
-                                        {filters.search ? 'No matching ratings' : 'No ratings yet'}
-                                    </p>
-                                    <p className="text-xs">
-                                        {filters.search ? 'Try a different search' : 'Click "New Evaluation" on the Suppliers page to add one'}
-                                    </p>
-                                </td>
+                                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Date</th>
+                                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Supplier</th>
+                                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">PO Number</th>
+                                <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Requesting Office</th>
+                                <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Amount</th>
+                                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Quality</th>
+                                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Timeliness</th>
+                                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Compliance</th>
+                                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Overall</th>
+                                <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Scanned Document</th>
                             </tr>
-                        ) : (
-                            evaluations.data.map((evaluation) => {
-                                const avg = average(evaluation);
-                                return (
-                                    <tr key={evaluation.id} className="hover:bg-muted/40 transition-colors">
-                                        <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                                            {evaluation.evaluation_date}
-                                        </td>
-                                        <td className="px-4 py-3 font-semibold text-foreground">
-                                            {evaluation.supplier?.company_name ?? '—'}
-                                        </td>
-                                        <td className="px-4 py-3 text-muted-foreground">
-                                            {evaluation.purchase_order?.po_number ?? '—'}
-                                        </td>
-                                        <td className="px-4 py-3 text-muted-foreground">
-                                            {evaluation.requesting_office}
-                                        </td>
-                                        <td className="px-4 py-3 text-right text-muted-foreground">
-                                            ₱{Number(evaluation.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                        </td>
-                                        <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.quality_of_goods}/5</td>
-                                        <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.timeliness}/5</td>
-                                        <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.compliance}/5</td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex flex-col items-center gap-1">
-                                                <Stars score={avg} />
-                                                <span className={`text-xs font-semibold ${ratingColor(avg)}`}>
-                                                    {avg.toFixed(1)}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3 text-center">
-                                            {evaluation.document_path !== null ? (
-                                                <a
-                                                    href={`/storage/${evaluation.document_path}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-primary hover:underline text-xs font-medium"
-                                                >
-                                                    View
-                                                </a>
-                                            ) : (
-                                                <span className="text-muted-foreground text-xs">—</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })
-                        )}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {evaluations.data.length === 0 ? (
+                                <tr>
+                                    <td colSpan={10} className="text-center py-16 text-muted-foreground">
+                                        <p className="text-base mb-1">
+                                            {filters.search ? 'No matching ratings' : 'No ratings yet'}
+                                        </p>
+                                        <p className="text-xs">
+                                            {filters.search ? 'Try a different search' : 'Click "New Evaluation" on the Suppliers page to add one'}
+                                        </p>
+                                    </td>
+                                </tr>
+                            ) : (
+                                evaluations.data.map((evaluation) => {
+                                    const avg = average(evaluation);
+                                    return (
+                                        <tr key={evaluation.id} className="hover:bg-muted/40 transition-colors">
+                                            <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
+                                                {evaluation.evaluation_date}
+                                            </td>
+                                            <td className="px-4 py-3 font-semibold text-foreground">
+                                                {evaluation.supplier?.company_name ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {evaluation.purchase_order?.po_number ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {evaluation.requesting_office}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-muted-foreground">
+                                                ₱{Number(evaluation.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            </td>
+                                            <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.quality_of_goods}/5</td>
+                                            <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.timeliness}/5</td>
+                                            <td className="px-4 py-3 text-center text-muted-foreground">{evaluation.compliance}/5</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <Stars score={avg} />
+                                                    <span className={`text-xs font-semibold ${ratingColor(avg)}`}>
+                                                        {avg.toFixed(1)}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                {evaluation.document_path !== null ? (
+                                                    <a
+                                                        href={`/storage/${evaluation.document_path}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-primary hover:underline text-xs font-medium"
+                                                    >
+                                                        View
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-muted-foreground text-xs">—</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Mobile */}
+            <div className="lg:hidden space-y-4">
+                {evaluations.data.map((evaluation) => {
+                    const avg = average(evaluation);
+
+                    return (
+                        <div
+                            key={evaluation.id}
+                            className="rounded-xl border border-border bg-card p-4"
+                        >
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h3 className="font-semibold">
+                                        {evaluation.supplier?.company_name}
+                                    </h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        {evaluation.purchase_order?.po_number}
+                                    </p>
+                                </div>
+
+                                <div className="text-right">
+                                    <Stars score={avg} />
+                                    <p className={`text-sm font-semibold ${ratingColor(avg)}`}>
+                                        {avg.toFixed(1)}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 grid grid-cols-2 gap-y-2 text-sm">
+                                <span className="text-muted-foreground">Date</span>
+                                <span>{evaluation.evaluation_date}</span>
+
+                                <span className="text-muted-foreground">Office</span>
+                                <span>{evaluation.requesting_office}</span>
+
+                                <span className="text-muted-foreground">Amount</span>
+                                <span>
+                                    ₱{Number(evaluation.total_amount).toLocaleString()}
+                                </span>
+
+                                <span className="text-muted-foreground">Quality</span>
+                                <span>{evaluation.quality_of_goods}/5</span>
+
+                                <span className="text-muted-foreground">Timeliness</span>
+                                <span>{evaluation.timeliness}/5</span>
+
+                                <span className="text-muted-foreground">Compliance</span>
+                                <span>{evaluation.compliance}/5</span>
+
+                                <span className="text-muted-foreground">Document</span>
+                                <span>
+                                    {evaluation.document_path ? (
+                                        <a
+                                            href={`/storage/${evaluation.document_path}`}
+                                            target="_blank"
+                                            className="text-primary"
+                                        >
+                                            View
+                                        </a>
+                                    ) : (
+                                        "—"
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             {evaluations.data.length > 0 && (

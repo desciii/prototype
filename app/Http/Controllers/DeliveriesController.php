@@ -6,61 +6,78 @@ use Inertia\Inertia;
 use App\Models\Delivery;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
+use App\Models\Supplier;
 
 class DeliveriesController extends Controller
 {
 
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $search = $request->input('search');
-        $poId = $request->input('po_id');
+        $supplierId = $request->input('supplier_id');
 
         $deliveries = Delivery::with([
                 'purchaseOrder:id,po_number',
                 'supplier:id,company_name',
             ])
             ->when($search, function ($query, $search) {
-                $query->where('invoice_number', 'like', "%{$search}%")
+                $query->where(function ($q) use ($search) {
+                    $q->where('invoice_number', 'like', "%{$search}%")
                     ->orWhere('dr_number', 'like', "%{$search}%")
-                    ->orWhereHas('purchaseOrder', function ($q) use ($search) {
-                        $q->where('po_number', 'like', "%{$search}%");
+                    ->orWhereHas('purchaseOrder', function ($po) use ($search) {
+                        $po->where('po_number', 'like', "%{$search}%");
                     });
+                });
             })
-            ->when($poId, function ($query, $poId) {
-                $query->where('purchase_order_id', $poId);
+            ->when($supplierId, function ($query, $supplierId) {
+                $query->where('supplier_id', $supplierId);
             })
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('deliveries/index', [
-            'deliveries' => $deliveries,
-            'purchaseOrders' => PurchaseOrder::select('id', 'po_number')->get(),
-            'filters' => [
-                'search' => $search,
-                'po_id'  => $poId,
-            ],
-        ]);
+            return Inertia::render('deliveries/index', [
+                'deliveries' => $deliveries,
+
+                'purchaseOrders' => PurchaseOrder::select(
+                    'id',
+                    'po_number'
+                )->orderBy('po_number')->get(),
+
+                'suppliers' => Supplier::select(
+                    'id',
+                    'company_name'
+                )->orderBy('company_name')->get(),
+
+                'filters' => [
+                    'search' => $search,
+                    'supplier_id' => $supplierId,
+                ],
+            ]);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'purchase_order_id' => 'required|exists:purchase_orders,id',
-            'invoice_number'    => 'nullable|string',
-            'invoice_date'      => 'nullable|date',
-            'dr_number'         => 'nullable|string',
-            'dr_date'           => 'nullable|date',
-            'document'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
-        ]);
+    $validated = $request->validate([
+        'purchase_order_id' => 'required|exists:purchase_orders,id',
+        'invoice_number'    => 'nullable|string',
+        'invoice_date'      => 'nullable|date',
+        'dr_number'         => 'nullable|string',
+        'dr_date'           => 'nullable|date',
+        'document'          => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:10240',
+    ]);
 
-        if ($request->hasFile('document')) {
-            $validated['document_path'] = $request->file('document')->store('deliveries', 'public');
-        }
+    $purchaseOrder = PurchaseOrder::findOrFail($validated['purchase_order_id']);
 
-        unset($validated['document']);
+    $validated['supplier_id'] = $purchaseOrder->supplier_id;
 
-        Delivery::create($validated);
+    if ($request->hasFile('document')) {
+        $validated['document_path'] = $request->file('document')->store('deliveries', 'public');
+    }
+
+    unset($validated['document']);
+
+    Delivery::create($validated);
 
         return redirect()->route('deliveries.index')->with('success', 'Delivery recorded.');
     }

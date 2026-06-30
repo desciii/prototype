@@ -24,10 +24,6 @@ interface PaginatedSuppliers {
 
 interface Filters {
     search: string | null;
-}
-
-interface Filters {
-    search: string | null;
     status: string | null;
 }
 
@@ -77,31 +73,31 @@ export default function Index({ suppliers, filters, purchaseOrders }: Props) {
     };
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="p-4 space-y-6 sm:p-6">
             <Head title="Suppliers" />
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Suppliers</h1>
                     <p className="text-sm text-muted-foreground mt-1">
                         Manage your supplier directory
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setEvalDialogOpen(true)}>
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" onClick={() => setEvalDialogOpen(true)} className="flex-1 sm:flex-initial">
                         Evaluate Supplier
                     </Button>
-                    <Link href="/supplier-evaluations">
-                        <Button variant="outline">View Ratings</Button>
+                    <Link href="/supplier-evaluations" className="flex-1 sm:flex-initial">
+                        <Button variant="outline" className="w-full">View Ratings</Button>
                     </Link>
-                    <Button onClick={() => setDialogOpen(true)}>
+                    <Button onClick={() => setDialogOpen(true)} className="flex-1 sm:flex-initial">
                         Add Supplier
                     </Button>
                 </div>
             </div>
 
             <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
-                <div className="relative flex-1 max-w-sm">
+                <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                     <Input
                         type="text"
@@ -130,49 +126,91 @@ export default function Index({ suppliers, filters, purchaseOrders }: Props) {
                 )}
             </form>
 
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
-                <table className="w-full text-sm">
-                    <thead className="bg-muted/50 border-b border-border">
-                        <tr>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Company Name</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Office Address</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">TIN</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Email</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Contact</th>
-                            <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                        {suppliers.data.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} className="text-center py-16 text-muted-foreground">
-                                    <p className="text-base mb-1">
-                                        {filters.search || filters.status ? 'No matching suppliers' : 'No suppliers yet'}
-                                    </p>
-                                    <p className="text-xs">
-                                        {filters.search || filters.status ? 'Try different filters' : 'Click "Add Supplier" to get started'}
-                                    </p>
-                                </td>
-                            </tr>
-                        ) : (
-                            suppliers.data.map((supplier) => (
-                                <tr key={supplier.id} className="hover:bg-muted/40 transition-colors">
-                                    <td className="px-4 py-3 font-semibold text-foreground">{supplier.company_name}</td>
-                                    <td className="px-4 py-3 text-muted-foreground">{supplier.office_address || '—'}</td>
-                                    <td className="px-4 py-3 text-muted-foreground">{supplier.tin || '—'}</td>
-                                    <td className="px-4 py-3 text-muted-foreground">{supplier.email || '—'}</td>
-                                    <td className="px-4 py-3 text-muted-foreground">{supplier.contact_number || '—'}</td>
-                                    <td className="px-4 py-3 text-center">
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[supplier.status] ?? 'bg-muted text-muted-foreground'}`}>
-                                            {supplier.status}
-                                        </span>
-                                    </td>
+            {/* Empty state, shared between both layouts */}
+            {suppliers.data.length === 0 ? (
+                <div className="bg-card border border-border rounded-xl py-16 text-center text-muted-foreground">
+                    <p className="text-base mb-1">
+                        {filters.search || filters.status ? 'No matching suppliers' : 'No suppliers yet'}
+                    </p>
+                    <p className="text-xs">
+                        {filters.search || filters.status ? 'Try different filters' : 'Click "Add Supplier" to get started'}
+                    </p>
+                </div>
+            ) : (
+                <>
+                    {/* Mobile: stacked cards */}
+                    <div className="space-y-3 md:hidden">
+                        {suppliers.data.map((supplier) => (
+                            <div
+                                key={supplier.id}
+                                className="bg-card border border-border rounded-xl p-4 space-y-3"
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <p className="font-semibold text-foreground min-w-0 truncate">{supplier.company_name}</p>
+                                    <span
+                                        className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[supplier.status] ?? 'bg-muted text-muted-foreground'}`}
+                                    >
+                                        {supplier.status}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-2 text-sm">
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground">Office Address</p>
+                                        <p className="text-foreground">{supplier.office_address || '—'}</p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                                        <div className="min-w-0">
+                                            <p className="text-xs text-muted-foreground">TIN</p>
+                                            <p className="text-foreground truncate">{supplier.tin || '—'}</p>
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-xs text-muted-foreground">Contact</p>
+                                            <p className="text-foreground truncate">{supplier.contact_number || '—'}</p>
+                                        </div>
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-muted-foreground">Email</p>
+                                        <p className="text-foreground truncate">{supplier.email || '—'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Desktop / tablet: table */}
+                    <div className="hidden md:block bg-card border border-border rounded-xl overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-muted/50 border-b border-border">
+                                <tr>
+                                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Company Name</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Office Address</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">TIN</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Email</th>
+                                    <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Contact</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                                {suppliers.data.map((supplier) => (
+                                    <tr key={supplier.id} className="hover:bg-muted/40 transition-colors">
+                                        <td className="px-4 py-3 font-semibold text-foreground whitespace-nowrap">{supplier.company_name}</td>
+                                        <td className="px-4 py-3 text-muted-foreground">{supplier.office_address || '—'}</td>
+                                        <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{supplier.tin || '—'}</td>
+                                        <td className="px-4 py-3 text-muted-foreground">{supplier.email || '—'}</td>
+                                        <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">{supplier.contact_number || '—'}</td>
+                                        <td className="px-4 py-3 text-center">
+                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[supplier.status] ?? 'bg-muted text-muted-foreground'}`}>
+                                                {supplier.status}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
 
             {suppliers.data.length > 0 && (
                 <div className="flex items-center justify-center gap-1 flex-wrap">

@@ -82,16 +82,16 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
                     </Card>
                 </div>
 
-                {/* Chart status breakdown */}
-                <div className="grid flex-1 gap-4 md:grid-cols-3">
-                    <Card className="col-span-2 flex flex-col rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
+                {/* Chart + status breakdown */}
+                <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3">
+                    <Card className="flex min-w-0 flex-col rounded-xl border border-sidebar-border/70 dark:border-sidebar-border md:col-span-2">
                         <CardHeader>
                             <CardTitle>Purchase Order Value Over Time</CardTitle>
                             <CardDescription>Total purchase order amount per month, {new Date().getFullYear()}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-[320px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
+                            <div className="h-[280px] w-full sm:h-[320px]">
+                                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                                     <AreaChart
                                         data={chartData}
                                         margin={{ top: 10, right: 20, left: 20, bottom: 10 }}
@@ -161,18 +161,48 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
                             <CardTitle>PO Status Breakdown</CardTitle>
                             <CardDescription>Current purchase orders by status</CardDescription>
                         </CardHeader>
-                        <CardContent className="flex-1 space-y-3">
-                            {Object.entries(poStatusBreakdown).length === 0 && (
-                                <p className="text-sm text-muted-foreground">No purchase orders yet.</p>
+                        <CardContent className="space-y-4">
+                            {Object.entries(poStatusBreakdown).length === 0 ? (
+                                <p className="text-sm text-muted-foreground">
+                                    No purchase orders yet.
+                                </p>
+                            ) : (
+                                (() => {
+                                    const total = Object.values(poStatusBreakdown).reduce(
+                                        (sum, count) => sum + count,
+                                        0
+                                    );
+
+                                    return Object.entries(poStatusBreakdown).map(([status, count]) => {
+                                        const percentage =
+                                            total > 0 ? Math.round((count / total) * 100) : 0;
+
+                                        return (
+                                            <div key={status} className="space-y-1.5">
+                                                <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                                                    <Badge
+                                                        variant={statusVariant[status] ?? "outline"}
+                                                        className="shrink-0 capitalize"
+                                                    >
+                                                        {status}
+                                                    </Badge>
+
+                                                    <span className="shrink-0 text-sm font-medium tabular-nums">
+                                                        {count} ({percentage}%)
+                                                    </span>
+                                                </div>
+
+                                                <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                                                    <div
+                                                        className="h-full rounded-full bg-primary transition-all duration-500"
+                                                        style={{ width: `${percentage}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()
                             )}
-                            {Object.entries(poStatusBreakdown).map(([status, count]) => (
-                                <div key={status} className="flex items-center justify-between">
-                                    <Badge variant={statusVariant[status] ?? 'outline'} className="capitalize">
-                                        {status}
-                                    </Badge>
-                                    <span className="text-sm font-medium">{count}</span>
-                                </div>
-                            ))}
                         </CardContent>
                     </Card>
                 </div>
