@@ -24,7 +24,7 @@ const mainNavItems: NavItem[] = [
     },
   
   {
-        title: 'Purchased Orders',
+        title: 'Purchase Orders',
         href: '/po',
         icon: FileText,
     },

@@ -158,7 +158,7 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
 
                     <Card className="flex flex-col rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
                         <CardHeader>
-                            <CardTitle>PO Status Breakdown</CardTitle>
+                            <CardTitle>Purchase Order Status Breakdown</CardTitle>
                             <CardDescription>Current purchase orders by status</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -254,7 +254,3 @@ export default function Dashboard({ stats, poStatusBreakdown, chartData, recentP
         </>
     );
 }
-
-Dashboard.layout = {
-    breadcrumbs: [{ title: 'Dashboard', href: dashboard() }],
-};

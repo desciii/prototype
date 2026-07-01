@@ -99,43 +99,61 @@ export default function Index({
                         Track and record all deliveries
                     </p>
                 </div>
-                <Button onClick={() => setDialogOpen(true)} className="w-full sm:w-auto">
-                    Record Delivery
-                </Button>
             </div>
 
-            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
-                <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                        type="text"
-                        placeholder="Search PO, invoice, DR number..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9"
-                    />
+            <form
+                onSubmit={handleSearch}
+                className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+            >
+                {/* Left side */}
+                <div className="flex flex-wrap gap-2 flex-1">
+                    <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search PO, invoice, DR number..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <select
+                        value={supplierId}
+                        onChange={(e) => handleSupplierChange(e.target.value)}
+                        className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                        <option value="">All Suppliers</option>
+
+                        {suppliers.map((supplier) => (
+                            <option key={supplier.id} value={supplier.id}>
+                                {supplier.company_name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <Button type="submit" variant="secondary">
+                        Search
+                    </Button>
+
+                    {(filters.search || filters.supplier_id) && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleClear}
+                        >
+                            Clear
+                        </Button>
+                    )}
                 </div>
 
-                <select
-                    value={supplierId}
-                    onChange={(e) => handleSupplierChange(e.target.value)}
-                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                {/* Right side */}
+                <Button
+                    type="button"
+                    onClick={() => setDialogOpen(true)}
                 >
-                    <option value="">All Suppliers</option>
-
-                    {suppliers.map((supplier) => (
-                        <option key={supplier.id} value={supplier.id}>
-                            {supplier.company_name}
-                        </option>
-                    ))}
-                </select>
-
-                <Button type="submit" variant="secondary">Search</Button>
-                {(filters.search || filters.supplier_id) && (
-                    <Button type="button" variant="ghost" onClick={handleClear}>
-                        Clear
-                    </Button>
-                )}
+                    Record Delivery
+                </Button>
             </form>
 
             {/* Empty state, shared between both layouts */}

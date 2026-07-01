@@ -96,40 +96,58 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                         Manage IAR entries linked to deliveries
                     </p>
                 </div>
-                <Button onClick={() => setDialogOpen(true)} className="w-full sm:w-auto">
-                    Add New Report
-                </Button>
             </div>
 
-            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
-                <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                        type="text"
-                        placeholder="Search IAR number, PO, inspector..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9"
-                    />
+            <form
+                onSubmit={handleSearch}
+                className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+            >
+                {/* Left side */}
+                <div className="flex flex-wrap gap-2 flex-1">
+                    <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search IAR number, PO, inspector..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <select
+                        value={status}
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="passed">Passed</option>
+                        <option value="failed">Failed</option>
+                    </select>
+
+                    <Button type="submit" variant="secondary">
+                        Search
+                    </Button>
+
+                    {(filters.search || filters.status) && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleClear}
+                        >
+                            Clear
+                        </Button>
+                    )}
                 </div>
 
-                <select
-                    value={status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                {/* Right side */}
+                <Button
+                    type="button"
+                    onClick={() => setDialogOpen(true)}
                 >
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="passed">Passed</option>
-                    <option value="failed">Failed</option>
-                </select>
-
-                <Button type="submit" variant="secondary">Search</Button>
-                {(filters.search || filters.status) && (
-                    <Button type="button" variant="ghost" onClick={handleClear}>
-                        Clear
-                    </Button>
-                )}
+                    Add New Report
+                </Button>
             </form>
 
             {/* Empty state, shared between both layouts */}

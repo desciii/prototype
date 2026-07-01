@@ -91,42 +91,60 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                         Manage and track all purchase orders
                     </p>
                 </div>
-                <Button onClick={() => setDialogOpen(true)} className="w-full sm:w-auto">
-                    Add Purchase Order
-                </Button>
             </div>
 
-            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
-                <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                        type="text"
-                        placeholder="Search PO number, office, supplier..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9"
-                    />
+            <form
+                onSubmit={handleSearch}
+                className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+            >
+                {/* Left side */}
+                <div className="flex flex-wrap gap-2 flex-1">
+                    <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search PO number, office, supplier..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <select
+                        value={status}
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="partial">Partial</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+
+                    <Button type="submit" variant="secondary">
+                        Search
+                    </Button>
+
+                    {(filters.search || filters.status) && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleClear}
+                        >
+                            Clear
+                        </Button>
+                    )}
                 </div>
 
-                {/* Status filter dropdown */}
-                <select
-                    value={status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                {/* Right side */}
+                <Button
+                    type="button"
+                    onClick={() => setDialogOpen(true)}
+                    className="w-full lg:w-auto"
                 >
-                    <option value="">All Statuses</option>
-                    <option value="pending">Pending</option>
-                    <option value="partial">Partial</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-
-                <Button type="submit" variant="secondary">Search</Button>
-                {(filters.search || filters.status) && (
-                    <Button type="button" variant="ghost" onClick={handleClear}>
-                        Clear
-                    </Button>
-                )}
+                    Add Purchase Order
+                </Button>
             </form>
 
             {/* Empty state, shared between both layouts */}

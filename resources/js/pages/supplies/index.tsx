@@ -83,47 +83,73 @@ export default function Index({ suppliers, filters, purchaseOrders }: Props) {
                         Manage your supplier directory
                     </p>
                 </div>
+            </div>
+
+            <form
+                onSubmit={handleSearch}
+                className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
+            >
+                {/* Left side */}
+                <div className="flex flex-wrap gap-2 flex-1">
+                    <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                        <Input
+                            type="text"
+                            placeholder="Search company, email, TIN, contact..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9"
+                        />
+                    </div>
+
+                    <select
+                        value={status}
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    >
+                        <option value="">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+
+                    <Button type="submit" variant="secondary">
+                        Search
+                    </Button>
+
+                    {(filters.search || filters.status) && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={handleClear}
+                        >
+                            Clear
+                        </Button>
+                    )}
+                </div>
+
+                {/* Right side */}
                 <div className="flex flex-wrap gap-2">
-                    <Button variant="outline" onClick={() => setEvalDialogOpen(true)} className="flex-1 sm:flex-initial">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEvalDialogOpen(true)}
+                    >
                         Evaluate Supplier
                     </Button>
-                    <Link href="/supplier-evaluations" className="flex-1 sm:flex-initial">
-                        <Button variant="outline" className="w-full">View Ratings</Button>
+
+                    <Link href="/supplier-evaluations">
+                        <Button type="button" variant="outline">
+                            View Ratings
+                        </Button>
                     </Link>
-                    <Button onClick={() => setDialogOpen(true)} className="flex-1 sm:flex-initial">
+
+                    <Button
+                        type="button"
+                        onClick={() => setDialogOpen(true)}
+                    >
                         Add Supplier
                     </Button>
                 </div>
-            </div>
-
-            <form onSubmit={handleSearch} className="flex flex-wrap gap-2">
-                <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                        type="text"
-                        placeholder="Search company, email, TIN, contact..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9"
-                    />
-                </div>
-
-                <select
-                    value={status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="border border-input bg-background text-foreground rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                    <option value="">All Statuses</option>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                </select>
-
-                <Button type="submit" variant="secondary">Search</Button>
-                {(filters.search || filters.status) && (
-                    <Button type="button" variant="ghost" onClick={handleClear}>
-                        Clear
-                    </Button>
-                )}
             </form>
 
             {/* Empty state, shared between both layouts */}
