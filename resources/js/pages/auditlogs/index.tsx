@@ -125,7 +125,7 @@ export default function Index({ logs, filters }: Props) {
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Timestamp</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">User</th>
                             <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Action</th>
-                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Changed</th>
+                            <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Module</th>
                             <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Record ID</th>
                             <th className="text-center px-4 py-3 font-semibold text-muted-foreground">Page</th>
                         </tr>

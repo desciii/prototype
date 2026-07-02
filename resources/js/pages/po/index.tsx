@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import POForm from '@/components/PurchaseOrders/poforms';
+import POView from '@/components/PurchaseOrders/poview';
 import { Head, Link, router } from '@inertiajs/react';
-import { Search } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 
 interface Supplier {
     id: number;
@@ -19,6 +20,14 @@ interface PurchaseOrder {
     status: string;
     supplier: Supplier;
     document_path: string | null;
+    delivery_term: string | null;
+    fund_cluster: string | null;
+    pr_number: string | null;
+    pr_date: string | null;
+    ors_bur_number: string | null;
+    ors_bur_date: string | null;
+    remarks: string | null;
+
 }
 
 interface PaginatedPOs {
@@ -45,12 +54,19 @@ const statusColors: Record<string, string> = {
 };
 
 const peso = (amount: number) =>
-    `₱${Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`;
+    '₱' + Number(amount).toLocaleString('en-PH', { minimumFractionDigits: 2 });
 
 export default function Index({ suppliers, purchaseOrders, filters }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [selectedPo, setSelectedPo] = useState<PurchaseOrder | null>(null);
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
+
+    const handleView = (po: PurchaseOrder) => {
+        setSelectedPo(po);
+        setViewOpen(true);
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -97,7 +113,6 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                 onSubmit={handleSearch}
                 className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between"
             >
-                {/* Left side */}
                 <div className="flex flex-wrap gap-2 flex-1">
                     <div className="relative w-full max-w-sm flex-1 sm:flex-initial">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -122,22 +137,15 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                         <option value="cancelled">Cancelled</option>
                     </select>
 
-                    <Button type="submit" variant="secondary">
-                        Search
-                    </Button>
+                    <Button type="submit" variant="secondary">Search</Button>
 
                     {(filters.search || filters.status) && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={handleClear}
-                        >
+                        <Button type="button" variant="ghost" onClick={handleClear}>
                             Clear
                         </Button>
                     )}
                 </div>
 
-                {/* Right side */}
                 <Button
                     type="button"
                     onClick={() => setDialogOpen(true)}
@@ -147,11 +155,10 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                 </Button>
             </form>
 
-            {/* Empty state, shared between both layouts */}
             {purchaseOrders.data.length === 0 ? (
                 <div className="bg-card border border-border rounded-xl py-16 text-center text-muted-foreground">
                     <p className="text-base mb-1">
-                        {filters.search ? `No results for "${filters.search}"` : 'No purchase orders yet'}
+                        {filters.search ? 'No results for "' + filters.search + '"' : 'No purchase orders yet'}
                     </p>
                     <p className="text-xs">
                         {filters.search ? 'Try a different search term' : 'Click "Add Purchase Order" to get started'}
@@ -164,7 +171,8 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                         {purchaseOrders.data.map((po) => (
                             <div
                                 key={po.id}
-                                className="bg-card border border-border rounded-xl p-4 space-y-3"
+                                className="bg-card border border-border rounded-xl p-4 space-y-3 cursor-pointer hover:border-primary/50 transition-colors"
+                                onClick={() => handleView(po)}
                             >
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
@@ -172,7 +180,10 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                         <p className="text-xs text-muted-foreground mt-0.5">{po.po_date}</p>
                                     </div>
                                     <span
-                                        className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[po.status] ?? 'bg-muted text-muted-foreground'}`}
+                                        className={
+                                            'shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold capitalize ' +
+                                            (statusColors[po.status] ?? 'bg-muted text-muted-foreground')
+                                        }
                                     >
                                         {po.status}
                                     </span>
@@ -193,18 +204,9 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                     </div>
                                     <div className="min-w-0">
                                         <p className="text-xs text-muted-foreground">Document</p>
-                                        {po.document_path ? (
-                                            <a
-                                                href={`/storage/${po.document_path}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-primary hover:underline font-medium"
-                                            >
-                                                View
-                                            </a>
-                                        ) : (
-                                            <span className="text-muted-foreground">—</span>
-                                        )}
+                                        <span className="text-muted-foreground">
+                                            {po.document_path ? 'Attached' : '—'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -223,6 +225,7 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                     <th className="text-right px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Amount</th>
                                     <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
                                     <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Scanned Document</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -236,14 +239,19 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                             {peso(po.po_amount)}
                                         </td>
                                         <td className="px-4 py-3 text-center">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${statusColors[po.status] ?? 'bg-muted text-muted-foreground'}`}>
+                                            <span
+                                                className={
+                                                    'px-2.5 py-1 rounded-full text-xs font-semibold capitalize ' +
+                                                    (statusColors[po.status] ?? 'bg-muted text-muted-foreground')
+                                                }
+                                            >
                                                 {po.status}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             {po.document_path ? (
                                                 <a
-                                                    href={`/storage/${po.document_path}`}
+                                                    href={'/storage/' + po.document_path}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-primary hover:underline text-xs font-medium"
@@ -253,6 +261,14 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                                             ) : (
                                                 <span className="text-muted-foreground text-xs">—</span>
                                             )}
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => handleView(po)}
+                                                className="text-xs font-medium text-primary hover:underline"
+                                            >
+                                                <Eye className="size-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -270,12 +286,13 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                             href={link.url ?? '#'}
                             preserveScroll
                             preserveState
-                            className={`px-3 py-1.5 rounded-md text-sm border transition-colors
-                                ${link.active
+                            className={
+                                'px-3 py-1.5 rounded-md text-sm border transition-colors ' +
+                                (link.active
                                     ? 'bg-primary text-primary-foreground border-primary'
-                                    : 'bg-card text-foreground border-border hover:bg-muted/50'}
-                                ${!link.url ? 'opacity-40 pointer-events-none' : ''}
-                            `}
+                                    : 'bg-card text-foreground border-border hover:bg-muted/50') +
+                                (!link.url ? ' opacity-40 pointer-events-none' : '')
+                            }
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ))}
@@ -286,6 +303,11 @@ export default function Index({ suppliers, purchaseOrders, filters }: Props) {
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 suppliers={suppliers}
+            />
+            <POView
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                purchaseOrder={selectedPo}
             />
         </div>
     );
