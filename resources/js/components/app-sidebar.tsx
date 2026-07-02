@@ -50,7 +50,13 @@ const mainNavItems: NavItem[] = [
     {
     title: 'Import / Export CSV',
     href: '/importexport',
-    icon: ArrowLeftRight, // import from lucide-react
+    icon: ArrowLeftRight,
+    },
+
+    {
+        title: 'System Audit',
+        href: '/audit-logs',
+        icon: LucideClock3,
     },
 ];
 
@@ -61,11 +67,6 @@ const footerNavItems: NavItem[] = [
         icon: FolderGit2,
     },
 
-    {
-        title: 'System Audit',
-        href: 'https://github.com/desciii/prototype',
-        icon: LucideClock3,
-    },
 ];
 
 export function AppSidebar() {

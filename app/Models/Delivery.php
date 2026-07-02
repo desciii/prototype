@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Auditable;
 
 class Delivery extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'purchase_order_id',
         'supplier_id',

@@ -8,6 +8,7 @@ use App\Http\Controllers\POController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImportExportController;
 use App\Http\Controllers\SupplierEvaluationController;
+use App\Http\Controllers\AuditLogController;
 
 Route::inertia('/', 'welcome')->name('home');
 
@@ -36,5 +37,8 @@ Route::get('/supplier-evaluations', [SupplierEvaluationController::class, 'index
 Route::post('/supplier-evaluations', [SupplierEvaluationController::class, 'store'])->name('supplier-evaluations.store');
 
 Route::get('/importexport/preview', [ImportExportController::class, 'preview']);
+
+Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
 
 require __DIR__.'/settings.php';
