@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 
 const MODULES = [
     { label: 'Suppliers', value: 'suppliers' },
-    { label: 'Purchase Orders', value: 'purchase-orders' },
+    { label: 'Purchase Orders', value: 'purchase_orders' },       
     { label: 'Deliveries', value: 'deliveries' },
     { label: 'IAR Reports', value: 'iars' },
-    { label: 'Supplier Evaluations', value: 'supplier-evaluations' },
+    { label: 'Supplier Evaluations', value: 'supplier_evaluations' },
 ];
 
 function parseCSV(text: string): { headers: string[]; rows: string[][] } {

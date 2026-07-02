@@ -30,13 +30,12 @@ Route::get('/po/create', [POController::class, 'create'])->name('purchase-orders
 Route::post('/po', [POController::class, 'store'])->name('purchase-orders.store');
 
 Route::get('/importexport', [ImportExportController::class, 'index'])->name('importexport.index');
-Route::post('/import', [ImportExportController::class, 'import'])->name('import');
-Route::get('/export', [ImportExportController::class, 'export'])->name('export');
+Route::post('/importexport/import', [ImportExportController::class, 'import'])->name('importexport.import');
+Route::get('/importexport/export', [ImportExportController::class, 'export'])->name('importexport.export');
+Route::get('/importexport/preview', [ImportExportController::class, 'preview'])->name('importexport.preview');
 
 Route::get('/supplier-evaluations', [SupplierEvaluationController::class, 'index'])->name('supplier-evaluations.index');
 Route::post('/supplier-evaluations', [SupplierEvaluationController::class, 'store'])->name('supplier-evaluations.store');
-
-Route::get('/importexport/preview', [ImportExportController::class, 'preview']);
 
 Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 
