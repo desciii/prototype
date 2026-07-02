@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText, Import, ArrowLeftRight, ChartLine, Newspaper} from 'lucide-react';
+import { BookOpen, FolderGit2, LayoutGrid, Package, Truck, File, FileText, Import, ArrowLeftRight, LucideClock3, Newspaper} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -20,7 +20,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: '/dashboard',
-        icon: ChartLine,
+        icon: LayoutGrid,
     },
   
   {
@@ -59,6 +59,12 @@ const footerNavItems: NavItem[] = [
         title: 'Repository',
         href: 'https://github.com/desciii/prototype',
         icon: FolderGit2,
+    },
+
+    {
+        title: 'System Audit',
+        href: 'https://github.com/desciii/prototype',
+        icon: LucideClock3,
     },
 ];
 

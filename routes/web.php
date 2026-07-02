@@ -35,4 +35,6 @@ Route::get('/export', [ImportExportController::class, 'export'])->name('export')
 Route::get('/supplier-evaluations', [SupplierEvaluationController::class, 'index'])->name('supplier-evaluations.index');
 Route::post('/supplier-evaluations', [SupplierEvaluationController::class, 'store'])->name('supplier-evaluations.store');
 
+Route::get('/importexport/preview', [ImportExportController::class, 'preview']);
+
 require __DIR__.'/settings.php';
