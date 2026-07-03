@@ -59,7 +59,7 @@ class ImportExportController extends Controller
                 'internal_remarks' => $r->internal_remarks,
             ]),
 
-            'purchase-orders' => \App\Models\PurchaseOrder::with('supplier')->get()->map(fn($r) => [
+            'purchase_orders' => \App\Models\PurchaseOrder::with('supplier')->get()->map(fn($r) => [
                 'id'             => $r->id,
                 'po_number'      => $r->po_number,
                 'po_date'        => $r->po_date,
@@ -100,7 +100,7 @@ class ImportExportController extends Controller
                 'document_path'   => $r->document_path,
             ]),
 
-            'supplier-evaluations' => \App\Models\SupplierEvaluation::with('supplier','purchaseOrder')->get()->map(fn($r) => [
+            'supplier_evaluations' => \App\Models\SupplierEvaluation::with('supplier','purchaseOrder')->get()->map(fn($r) => [
                 'id'                => $r->id,
                 'evaluation_date'   => $r->evaluation_date,
                 'supplier'          => $r->supplier?->company_name,

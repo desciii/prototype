@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Iarforms from '@/components/Iar/iarforms';
+import IarView from '@/components/Iar/iarview';
 import { Head, Link, router } from '@inertiajs/react';
-import { Search } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 
 interface PurchaseOrder {
     id: number;
@@ -23,7 +24,7 @@ interface Iar {
     inspected_by: string;
     inspection_date: string;
     status: string;
-    remarks: string;
+    remarks: string | null;
     document_path: string | null;
     purchase_order: PurchaseOrder;
     delivery: Delivery | null;
@@ -54,8 +55,15 @@ const statusColors: Record<string, string> = {
 
 export default function Index({ iars, purchaseOrders, deliveries, filters }: Props) {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [selectedIar, setSelectedIar] = useState<Iar | null>(null);
     const [search, setSearch] = useState(filters.search ?? '');
     const [status, setStatus] = useState(filters.status ?? '');
+
+    const handleView = (iar: Iar) => {
+        setSelectedIar(iar);
+        setViewOpen(true);
+    };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -167,7 +175,8 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                         {iars.data.map((iar) => (
                             <div
                                 key={iar.id}
-                                className="bg-card border border-border rounded-xl p-4 space-y-3"
+                                className="bg-card border border-border rounded-xl p-4 space-y-3 cursor-pointer hover:border-primary/50 transition-colors"
+                                onClick={() => handleView(iar)}
                             >
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
@@ -203,6 +212,7 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                                                 href={`/storage/${iar.document_path}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                onClick={(e) => e.stopPropagation()}
                                                 className="text-primary hover:underline font-medium"
                                             >
                                                 View
@@ -228,6 +238,7 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Inspection Date</th>
                                     <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Status</th>
                                     <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Document</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -256,6 +267,14 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                                             ) : (
                                                 <span className="text-muted-foreground text-xs">—</span>
                                             )}
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => handleView(iar)}
+                                                className="text-xs font-medium text-primary hover:underline"
+                                            >
+                                                <Eye className="size-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -290,6 +309,11 @@ export default function Index({ iars, purchaseOrders, deliveries, filters }: Pro
                 onOpenChange={setDialogOpen}
                 purchaseOrders={purchaseOrders}
                 deliveries={deliveries}
+            />
+            <IarView
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                iar={selectedIar}
             />
         </div>
     );
