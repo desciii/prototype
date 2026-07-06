@@ -21,22 +21,30 @@ class ImportExportController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate([
-            'module' => 'required|in:suppliers,purchase_orders,deliveries,iars,supplier_evaluations',
-            'file'   => 'required|file|mimes:csv,txt',
-        ]);
+        if (!$request->hasFile('file')) {
+            return back()->withErrors([
+                'file' => 'No file was uploaded.'
+            ]);
+        }
 
-        $csv = Reader::createFromPath($request->file('file')->getPathname());
+        $file = $request->file('file');
+
+        if (!$file->isValid()) {
+            return back()->withErrors([
+                'file' => $file->getErrorMessage()
+            ]);
+        }
+
+        $csv = Reader::createFromPath($file->getRealPath(), 'r');
         $csv->setHeaderOffset(0);
-        $records = $csv->getRecords();
 
-        foreach ($records as $record) {
+        foreach ($csv->getRecords() as $record) {
             match ($request->module) {
-                'suppliers'             => Supplier::create($record),
-                'purchase_orders'       => PurchaseOrder::create($record),
-                'deliveries'            => Delivery::create($record),
-                'iars'                  => Iar::create($record),
-                'supplier_evaluations'  => SupplierEvaluation::create($record),
+                'suppliers' => Supplier::create($record),
+                'purchase_orders' => PurchaseOrder::create($record),
+                'deliveries' => Delivery::create($record),
+                'iars' => Iar::create($record),
+                'supplier_evaluations' => SupplierEvaluation::create($record),
             };
         }
 

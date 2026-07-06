@@ -107,10 +107,10 @@ export default function DeliveryView({ open, onOpenChange, delivery }: Props) {
                                 rel="noopener noreferrer"
                                 className="text-sm text-primary hover:underline font-medium"
                             >
-                                View Scanned Receipt
+                                View Scanned Document
                             </a>
                         ) : (
-                            <p className="text-sm text-muted-foreground">No receipt uploaded</p>
+                            <p className="text-sm text-muted-foreground">No document uploaded</p>
                         )}
                     </div>
 

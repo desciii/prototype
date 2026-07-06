@@ -209,13 +209,14 @@ export default function Poforms({ open, onOpenChange, suppliers }: Props) {
                     </div>
 
                     <div>
-                        <label className={labelClass}>Remarks</label>
+                        <label className={labelClass}>Description</label>
                         <textarea
                             name="remarks"
                             value={data.remarks}
                             onChange={handleChange}
+                            required
                             rows={3}
-                            placeholder="Optional notes..."
+                            placeholder="Description of Items and Quantity"
                             className={inputClass}
                         />
                     </div>

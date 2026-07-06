@@ -5,8 +5,21 @@ import react from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
 import { defineConfig } from 'vite';
+import { loadEnv } from 'vite';
 
-export default defineConfig({
+
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+
+    return {
+        server: {
+            host: '0.0.0.0',
+            port: 5173,
+            hmr: {
+                host: env.VITE_HMR_HOST,
+            },
+        },
+
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],

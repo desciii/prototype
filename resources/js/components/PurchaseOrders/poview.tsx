@@ -132,7 +132,7 @@ export default function POView({ open, onOpenChange, purchaseOrder }: Props) {
                     {purchaseOrder.remarks && (
                         <div className="border-t border-border pt-4 space-y-1">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                                Remarks
+                                Description
                             </p>
                             <p className="text-sm text-foreground whitespace-pre-wrap">{purchaseOrder.remarks}</p>
                         </div>
