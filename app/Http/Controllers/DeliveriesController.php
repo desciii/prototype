@@ -55,7 +55,7 @@ class DeliveriesController extends Controller
             ]);
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $validated = $request->validate([
             'purchase_order_id' => 'required|exists:purchase_orders,id',
@@ -73,8 +73,12 @@ class DeliveriesController extends Controller
             'images.*'          => 'file|mimes:jpg,jpeg,png|max:10240',
         ]);
 
+        $po = PurchaseOrder::find($validated['purchase_order_id']);
+
+        // Derive supplier from the PO — this was missing entirely
+        $validated['supplier_id'] = $po?->supplier_id;
+
         if (empty($validated['total_amount'])) {
-            $po = PurchaseOrder::find($validated['purchase_order_id']);
             $validated['total_amount'] = $po?->po_amount;
         }
 
