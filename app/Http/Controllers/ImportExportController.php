@@ -76,15 +76,20 @@ class ImportExportController extends Controller
                 'remarks'        => $r->remarks,
             ]),
 
-            'deliveries' => \App\Models\Delivery::with('purchaseOrder','supplier')->get()->map(fn($r) => [
-                'id'             => $r->id,
-                'po_number'      => $r->purchaseOrder?->po_number,
-                'supplier'       => $r->supplier?->company_name,
-                'invoice_number' => $r->invoice_number,
-                'invoice_date'   => $r->invoice_date,
-                'dr_number'      => $r->dr_number,
-                'dr_date'        => $r->dr_date,
-                'document_path'  => $r->document_path,
+            'deliveries' => \App\Models\Delivery::with('purchaseOrder', 'supplier')->get()->map(fn($r) => [
+                'id'                 => $r->id,
+                'po_number'          => $r->purchaseOrder?->po_number,
+                'supplier'           => $r->supplier?->company_name,
+                'invoice_number'     => $r->invoice_number,
+                'invoice_date'       => $r->invoice_date,
+                'dr_number'          => $r->dr_number,
+                'dr_date'            => $r->dr_date,
+                'received_by_1'      => $r->received_by_1,
+                'received_by_2'      => $r->received_by_2,
+                'place_of_delivery'  => $r->place_of_delivery,
+                'total_amount'       => $r->total_amount,
+                'remarks'            => $r->remarks,
+                'document_path'      => $r->document_path,
             ]),
 
             'iars' => \App\Models\Iar::with('purchaseOrder','delivery')->get()->map(fn($r) => [
