@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
+use App\Models\Delivery;
 use App\Models\Iar;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
@@ -13,29 +15,19 @@ class DashboardController extends Controller
     public function index(): Response
     {
         $stats = [
-            'totalPoAmount' => PurchaseOrder::sum('po_amount'),
-            'activeSuppliers' => Supplier::where('status', 'active')->count(),
+            'totalPos' => PurchaseOrder::count(),
+            'totalSuppliers' => Supplier::where('status', 'active')->count(),
             'pendingIars' => Iar::where('status', 'pending')->count(),
-            'completedPos' => PurchaseOrder::where('status', 'completed')->count(),
+            'totalDeliveries' => Delivery::count(),
         ];
 
         $poStatusBreakdown = PurchaseOrder::selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        $monthlyPoAmount = PurchaseOrder::selectRaw("strftime('%m', po_date) as month, SUM(po_amount) as total")
-            ->whereRaw("strftime('%Y', po_date) = ?", [(string) now()->year])
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->map(fn ($row) => [
-                'month' => date('M', mktime(0, 0, 0, (int) $row->month, 1)),
-                'amount' => (float) $row->total,
-            ]);
-
         $recentPurchaseOrders = PurchaseOrder::with('supplier')
             ->latest('po_date')
-            ->take(8)
+            ->take(5)
             ->get()
             ->map(fn ($po) => [
                 'id' => $po->id,
@@ -46,11 +38,20 @@ class DashboardController extends Controller
                 'date' => \Carbon\Carbon::parse($po->po_date)->format('M d, Y'),
             ]);
 
+        $recentActivity = AuditLog::with('user')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(fn ($log) => [
+                'description' => ($log->user->name ?? 'System') . ' ' . $log->action . ' ' . $log->model . ($log->model_id ? " #{$log->model_id}" : ''),
+                'timestamp' => $log->created_at->diffForHumans(),
+            ]);
+
         return Inertia::render('dashboard', [
             'stats' => $stats,
             'poStatusBreakdown' => $poStatusBreakdown,
-            'chartData' => $monthlyPoAmount,
             'recentPurchaseOrders' => $recentPurchaseOrders,
+            'recentActivity' => $recentActivity,
         ]);
     }
 }
