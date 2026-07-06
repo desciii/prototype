@@ -16,6 +16,11 @@ class Delivery extends Model
         'invoice_date',
         'dr_number',
         'dr_date',
+        'received_by_1',
+        'received_by_2',
+        'place_of_delivery',
+        'remarks',
+        'total_amount',
         'document_path',
     ];
 
@@ -32,5 +37,10 @@ class Delivery extends Model
     public function iar()
     {
         return $this->hasOne(Iar::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(DeliveryImage::class);
     }
 }

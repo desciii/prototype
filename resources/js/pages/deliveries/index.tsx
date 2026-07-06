@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import Deliveryforms from '@/components/Deliveries/deliveryforms';
 import { Head, Link, router } from '@inertiajs/react';
 import { Search } from 'lucide-react';
+import DeliveryView from '@/components/Deliveries/deliveryview';
+import { Eye } from 'lucide-react';
 
 interface PurchaseOrder {
     id: number;
@@ -15,13 +17,24 @@ interface Supplier {
     company_name: string;
 }
 
+interface DeliveryImage {
+    id: number;
+    image_path: string;
+}
+
 interface Delivery {
     id: number;
     invoice_number: string;
     invoice_date: string;
     dr_number: string;
     dr_date: string;
+    received_by_1: string | null;
+    received_by_2: string | null;
+    place_of_delivery: string | null;
+    remarks: string | null;
+    total_amount: number | string | null;
     document_path: string | null;
+    images: DeliveryImage[];
     purchase_order: PurchaseOrder;
     supplier: Supplier | null;
 }
@@ -63,6 +76,14 @@ export default function Index({
             preserveScroll: true,
             replace: true,
         });
+    };
+
+    const [viewOpen, setViewOpen] = useState(false);
+    const [selectedDelivery, setSelectedDelivery] = useState<Delivery | null>(null);
+
+    const handleView = (delivery: Delivery) => {
+        setSelectedDelivery(delivery);
+        setViewOpen(true);
     };
 
     const handleSupplierChange = (value: string) => {
@@ -232,6 +253,7 @@ export default function Index({
                                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">DR Number</th>
                                     <th className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">DR Date</th>
                                     <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Scanned Document</th>
+                                    <th className="text-center px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
@@ -260,6 +282,14 @@ export default function Index({
                                             ) : (
                                                 <span className="text-muted-foreground text-xs">—</span>
                                             )}
+                                        </td>
+                                        <td className="px-4 py-3 text-center">
+                                            <button
+                                                onClick={() => handleView(delivery)}
+                                                className="text-primary hover:text-primary/70 transition-colors"
+                                            >
+                                                <Eye className="size-4" />
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -293,6 +323,11 @@ export default function Index({
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 purchaseOrders={purchaseOrders}
+            />
+            <DeliveryView
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                delivery={selectedDelivery}
             />
         </div>
     );
